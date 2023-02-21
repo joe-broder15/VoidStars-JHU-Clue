@@ -1,7 +1,4 @@
-# will potentially be the server
-# will be we http or tcp? who knows lol
-# will we use 2pc or roll our own protocol? who knows lol
-
+#the server
 def main():
     """ Main entry point of the app """
     print("you have run the server from your command line")

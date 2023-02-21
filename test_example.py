@@ -13,11 +13,11 @@ def test_1():
 
 def test_2():
     # create a list of the first 200 even numbers
-    l = [2*i for i in range(1,101)]
+    theList = [2*i for i in range(1,101)]
 
     # make sure they're correct
     for i in range(0,100):
-        assert 2*(i+1) == l[i]
+        assert 2*(i+1) == theList[i]
 
 def not_a_test():
     assert True
