@@ -1,1 +1,3 @@
-# will potentially contain game logic to be used by the server
+class Game:
+    def __init__(self):
+        pass
