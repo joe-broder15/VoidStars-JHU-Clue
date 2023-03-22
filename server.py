@@ -12,7 +12,7 @@ class Server:
         self.app.add_url_rule('/api/reset_game', 'reset_game', self.reset_game, methods=['POST'])
 
     def start_server(self):
-        self.app.run
+        self.app.run()
 
     def create_game(self):
         pass
@@ -23,8 +23,8 @@ class Server:
     def update_game(self, game_id, data):
         pass
 
-    def get_game_state(self, game_id):
-        pass
+    def get_game_state(self):
+        return "5"
 
     def reset_game(self, game_id):
         pass
