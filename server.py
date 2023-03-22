@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from game import Game
+import uuid
 
 class Server:
     def __init__(self):
@@ -11,23 +12,48 @@ class Server:
         self.app.add_url_rule('/api/get_game_state', 'get_game_state', self.get_game_state, methods=['GET'])
         self.app.add_url_rule('/api/reset_game', 'reset_game', self.reset_game, methods=['POST'])
 
+        tokens = {}
+
     def start_server(self):
-        self.app.run()
+        self.app.run(host='0.0.0.0', port='5742')
 
     def create_game(self):
-        pass
+        self.game = Game()
+        return jsonify({'status': 'Game created'})
 
     def join_game(self, game_id):
-        pass
+        if self.game is not None:
+#            player_id = self.game.add_player()
+            token = uuid.uuid4().hex
+            self.tokens[token] = player_id
+            return jsonify({'token': token})
+        else:
+            return jsonify({'error': 'Game does not exist'}), 404
 
-    def update_game(self, game_id, data):
-        pass
+    def update_game(self):
+        token = request.headers.get('Authorization')
+        if token in self.tokens:
+            player_id = self.tokens[token]
+            data = request.get_json()
+#            self.game.update_game(data)
+            return jsonify({'status': 'Success'})
+        else:
+            return jsonify({'error': 'Unauthorized'}), 401
 
     def get_game_state(self):
-        return "5"
+        if self.game is not None:
+#            state, data = self.game.get_state()
+            return jsonify({'state': state, 'data': data})
+        else:
+            return jsonify({'error': 'Game not created'}), 404
 
-    def reset_game(self, game_id):
-        pass
+    def reset_game(self):
+        token = request.headers.get('Authorization')
+        if token in self.tokens:
+#            self.game.reset_game()
+            return jsonify({'status': 'Success'})
+        else:
+            return jsonify({'error': 'Unauthorized'}), 401
 
 def main():
     """ Main entry point of the app """
