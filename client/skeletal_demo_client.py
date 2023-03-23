@@ -181,7 +181,7 @@ def waitForUpdate():
     print("Waiting for update")
     while True:
         #Get update from server and print it out. Update could be a randomly generated number or something to show this works on multiple clients at the same time.
-        print(requests.get("http://127.0.0.1:5000/api/get_game_state", params={'game_id': 1}).text)
+        print(requests.get("http://127.0.0.1:5742/api/get_game_state", params={'game_id': 1}).text)
         time.sleep(2)
 
 def homeMenu():

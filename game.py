@@ -17,8 +17,14 @@ class Game:
         self.out = None  # players who have already given accusations
         self.last = "" # a string decribing what the last move made was
 
+        self.demo = 0 # state to be set by a user during the demo
+
     def get_state(self):
-        return "this will eventually be some state", "this will eventually be some data"
+        return "this will eventually be some state", self.demo
+
+    def update_state(self, number):
+        self.demo = number
+        return
     
     def get_turn(self):
         pass

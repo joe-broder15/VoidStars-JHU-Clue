@@ -44,6 +44,7 @@ class Server:
 
     def get_game_state(self):
         if self.game is not None:
+            print("hit")
             state, data = self.game.get_state()
             return jsonify({'state': state, 'data': data})
         else:
