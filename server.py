@@ -12,6 +12,8 @@ class Server:
         self.app.add_url_rule('/api/get_game_state', 'get_game_state', self.get_game_state, methods=['GET'])
         self.app.add_url_rule('/api/reset_game', 'reset_game', self.reset_game, methods=['POST'])
 
+        self.game = Game()
+
         tokens = {}
 
     def start_server(self):
@@ -42,7 +44,7 @@ class Server:
 
     def get_game_state(self):
         if self.game is not None:
-#            state, data = self.game.get_state()
+            state, data = self.game.get_state()
             return jsonify({'state': state, 'data': data})
         else:
             return jsonify({'error': 'Game not created'}), 404
