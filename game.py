@@ -33,10 +33,14 @@ class Game:
         pass
 
     def make_suggestion(self, player, suggestion):
-        pass
+        response = "The player suggested {} used the {} in the {} to commit the crime".format(suggestion['char'], suggestion['weapon'], suggestion['loc'])
+        print("FROM GAME SUBSYSTEM: " + response)
+        return response
 
     def make_accusation(self, player, suggestion):
-        pass
+        response = "The player accused {} of using the {} in the {} to commit the crime".format(suggestion['char'], suggestion['weapon'], suggestion['loc'])
+        print("FROM GAME SUBSYSTEM: " + response)
+        return response
 
     def end_game(self):
         pass

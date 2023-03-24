@@ -1,6 +1,16 @@
 from flask import Flask, request, jsonify
 from game import Game
 import uuid
+from threading import Thread
+import random
+import time
+
+
+def update_skeletal_state(game):
+    while True:
+        num = random.randint(1,100)
+        game.update_state(num)
+        time.sleep(5)
 
 class Server:
     def __init__(self):
@@ -11,10 +21,13 @@ class Server:
         self.app.add_url_rule('/api/update_game', 'update_game', self.update_game, methods=['POST'])
         self.app.add_url_rule('/api/get_game_state', 'get_game_state', self.get_game_state, methods=['GET'])
         self.app.add_url_rule('/api/reset_game', 'reset_game', self.reset_game, methods=['POST'])
-
+        self.app.add_url_rule('/api/make_suggestion', 'make_suggestion', self.make_suggestion, methods=['POST'])
+        self.app.add_url_rule('/api/make_accusation', 'make_accusation', self.make_accusation, methods=['POST'])
         self.game = Game()
 
         tokens = {}
+        self.t = Thread(target=update_skeletal_state, args=(self.game,))
+        self.t.start()
 
     def start_server(self):
         self.app.run(host='0.0.0.0', port='5742')
@@ -22,6 +35,16 @@ class Server:
     def create_game(self):
         self.game = Game()
         return jsonify({'status': 'Game created'})
+
+    def make_suggestion(self):
+        suggestion = request.json
+        print("Server got suggestion: " + str(request.json))
+        return jsonify({'state': self.game.make_suggestion("player", suggestion)})
+
+    def make_accusation(self):
+        suggestion = request.json
+        print("Server got accusation: " + str(request.json))
+        return jsonify({'state': self.game.make_accusation("player", suggestion)})
 
     def join_game(self, game_id):
         if self.game is not None:

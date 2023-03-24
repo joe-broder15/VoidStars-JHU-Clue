@@ -49,17 +49,17 @@ def makeAccusation(char="unentered", weapon="unentered"):
         if input == "accuse":
             return 0
         if input == "1":
-            char = "Revolver"
+            weapon = "Revolver"
         elif input == "2":
-            char = "Dagger"
+            weapon = "Dagger"
         elif input == "3":
-            char = "Pipe"
+            weapon = "Pipe"
         elif input == "4":
-            char = "Rope"
+            weapon = "Rope"
         elif input == "5":
-            char = "Candlestick"
+            weapon = "Candlestick"
         elif input == "6":
-            char = "Wrench"
+            weapon = "Wrench"
         else:
             print("That was not a valid weapon")
             makeAccusation(char)
@@ -92,7 +92,7 @@ def makeAccusation(char="unentered", weapon="unentered"):
         makeAccusation(char, weapon)
 
     #Make accusation to server and respond to acurasy
-
+    print(requests.post("http://127.0.0.1:5742/api/make_accusation", json={'loc': loc, 'char': char, 'weapon': weapon}).text)
 
 def movementPhase():
     print("You are in a hallway. Where do you want to move:")
@@ -156,6 +156,7 @@ def suggestionPhase(loc, char="unentered"):
         print("That was not a valid weapon")
         suggestionPhase(loc, char)
     #Send loc, char, and weapon to server and print response
+    print(requests.post("http://127.0.0.1:5742/api/make_suggestion", json={'loc': loc, 'char': char, 'weapon': weapon}).text)
     return 1
 
 
