@@ -2,7 +2,7 @@ class Player:
     def __init__(self, player_session_id, name, character):
         self.player_session_id = player_session_id
         self.name = name
-        self.cards = {}
+        self.cards = set()
         self.character = character
         self.can_suggest = True
         self.is_out = True
