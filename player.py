@@ -1,3 +1,14 @@
+CHARACTERS = [
+    "Miss Scarlet",
+    "Colonel Mustard",
+    "Mrs. White",
+    "Mr. Green",
+    "Mrs. Peacock",
+    "Professor Plum",
+    "Mr. Body",
+]
+
+
 class Player:
     def __init__(self, player_session_id, name, character):
         self.player_session_id = player_session_id

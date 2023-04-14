@@ -1,6 +1,21 @@
 from enum import Enum
 
-EventType = Enum("EventType", ["WIN", "LOSE", "MOVE", "ACCUSE", "SUGGEST", "START"])
+EventType = Enum(
+    "EventType",
+    [
+        "WIN",
+        "LOSE",
+        "MOVE",
+        "ACCUSE",
+        "SUGGEST",
+        "START",
+        "PLAYER_ADDED",
+        "SHOW",
+        "TURN",
+        "READY",
+        "START",
+    ],
+)
 
 
 class Event:
@@ -14,11 +29,13 @@ class Event:
         self.private_IDs = private_IDs
         Event.event_count += 1
 
-    def get_state(self):
+    def get_state(self, session_id):
+        resp = self.public_response
+        if session_id in self.private_IDs:
+            resp = self.private_response
+
         return {
             "event_ID": self.event_ID,
             "event_type": self.event_type,
-            "public_response": self.public_response,
-            "private_response": self.private_response,
-            "private_IDs": list(self.private_IDs),
+            "response": resp,
         }
