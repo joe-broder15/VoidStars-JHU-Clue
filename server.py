@@ -90,17 +90,6 @@ class Server:
         else:
             return jsonify({'error': 'Unauthorized'}), 401
 
-
-    def update_game(self):
-        token = request.headers.get('Authorization')
-        if token in self.tokens:
-            player_id = self.tokens[token]
-            data = request.get_json()
-#            self.game.update_game(data)
-            return jsonify({'status': 'Success'})
-        else:
-            return jsonify({'error': 'Unauthorized'}), 401
-
     def get_game_state(self):
         if self.game is not None:
             print("hit")
