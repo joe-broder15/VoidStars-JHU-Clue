@@ -5,7 +5,6 @@ CHARACTERS = [
     "Mr. Green",
     "Mrs. Peacock",
     "Professor Plum",
-    "Mr. Body",
 ]
 
 
@@ -44,6 +43,12 @@ class Player:
             if c.contains_clue(character, location, weapon):
                 return c
         return None
+
+    def set_can_suggest(self, can_suggest):
+        self.can_suggest = can_suggest
+
+    def get_can_suggest(self):
+        return self.can_suggest
 
     def get_state(self, session_id):
         out = {
