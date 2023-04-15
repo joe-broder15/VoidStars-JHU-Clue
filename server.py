@@ -66,6 +66,14 @@ class Server:
         player_id = data["session_id"]
         self.game.end_turn(player_id)
         return {"status": "Success, player turn ended"}
+    
+    def move_player(self):
+        data = request.get_json()
+        player_id = data["session_id"]
+        location = data["location"]
+        if self.game.move_player(player_id, location):
+            return jsonify({'status': 'Success, player moved'})
+        return jsonify({'status': 'Failed, player not moved'})
         
     def get_game_state(self):
         pass

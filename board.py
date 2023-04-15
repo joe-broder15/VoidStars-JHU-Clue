@@ -192,6 +192,8 @@ class Board:
             # Update player's position
             self.character_positions[character] = (row, col)
             print(f"Moved {character} from ({old_row, old_col}) to {row, col}")
+            return True
+        return False
 
     def get_room_type(self, row, col):
         return self.grid[row][col].type
