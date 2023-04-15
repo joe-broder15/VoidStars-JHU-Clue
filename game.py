@@ -270,7 +270,7 @@ class Game:
             if ret:
                 if (
                     self.game_board.get_room_type(location[0], location[1])
-                    != RoomType.HALLWAY
+                    == RoomType.NORMAL
                 ):
                     self.get_player(session_id).can_suggest = True
 

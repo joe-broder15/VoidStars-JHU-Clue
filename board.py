@@ -207,8 +207,7 @@ class Board:
             for cell in row:
                 if cell.type != RoomType.WALL:
                     room_state = cell.get_state()
-                    if room_state['characters']:
-                        board_state.append(room_state)
+                    board_state.append(room_state)
         return board_state
 
 
