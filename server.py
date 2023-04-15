@@ -56,7 +56,8 @@ class Server:
         return jsonify({'status': 'Failed, user does not exist'})
     
     def start_game(self):
-        pass
+        self.game.start_game()
+        return jsonify({'status': 'Success, game started'})
         
 
     def get_game_state(self):
