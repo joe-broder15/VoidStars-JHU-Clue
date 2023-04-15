@@ -261,7 +261,7 @@ class Game:
     def move_player(self, session_id, location):
         player = self.get_player(session_id)
         if player:
-            ret = self.game_board.move_player(self, player.character, location)
+            ret = self.game_board.move_player(player.character, location)
 
             if ret:
                 if (
