@@ -21,16 +21,27 @@ class RoomEnum(Enum):
     DINING_ROOM = (8, "Dining Room", RoomType.NORMAL, [])
     TILE = (9, "Tile", RoomType.TILE, [])
     WALL = (10, "Wall", RoomType.WALL, [])
-
+    HALLWAY_STUDY_HALL = (11, "Hallway Study Hall", RoomType.HALLWAY, [])
+    HALLWAY_HALL_LOUNGE = (12, "Hallway Hall Lounge", RoomType.HALLWAY, [])
+    HALLWAY_STUDY_LIBRARY = (13, "Hallway Study Library", RoomType.HALLWAY, [])
+    HALLWAY_HALL_BILLIARD = (14, "Hallway Hall Billiard Room", RoomType.HALLWAY, [])
+    HALLWAY_LOUNGE_DINING = (15, "Hallway Lounge Dining Room", RoomType.HALLWAY, [])
+    HALLWAY_LIBRARY_BILLIARD = (16, "Hallway Library Billiard Room", RoomType.HALLWAY, [])
+    HALLWAY_BILLIARD_DINING = (17, "Hallway Billiard Room Dining Room", RoomType.HALLWAY, [])
+    HALLWAY_LIBRARY_CONSERVATORY = (18, "Hallway Library Conservatory", RoomType.HALLWAY, [])
+    HALLWAY_BILLIARD_BALLROOM = (19, "Hallway Billiard Room Ballroom", RoomType.HALLWAY, [])
+    HALLWAY_DINING_KITCHEN = (20, "Hallway Dining Room Kitchen", RoomType.HALLWAY, [])
+    HALLWAY_CONSERVATORY_BALLROOM = (21, "Hallway Conservatory Ballroom", RoomType.HALLWAY, [])
+    HALLWAY_BALLROOM_KITCHEN = (22, "Hallway Ballroom Kitchen", RoomType.HALLWAY, [])
 
 class Board:
     STARTING_LOCATIONS = [
-        (1, 1),
-        (5, 5),
-        (1, 5),
-        (5, 1),
-        (3, 5),
-        (3, 1)
+        (1, 0),
+        (3, 4),
+        (1, 4),
+        (4, 1),
+        (0, 3),
+        (1, 4)
     ]
 
     def __init__(self):
@@ -42,17 +53,11 @@ class Board:
 
     def start_board(self, character_names=None):
         self.grid_default = [
-            [RoomEnum.WALL, RoomEnum.KITCHEN, RoomEnum.WALL, RoomEnum.WALL, RoomEnum.WALL, RoomEnum.CONSERVATORY,
-             RoomEnum.WALL],
-            [RoomEnum.WALL, RoomEnum.TILE, RoomEnum.TILE, RoomEnum.TILE, RoomEnum.TILE, RoomEnum.TILE, RoomEnum.WALL],
-            [RoomEnum.WALL, RoomEnum.TILE, RoomEnum.TILE, RoomEnum.TILE, RoomEnum.TILE, RoomEnum.TILE,
-             RoomEnum.BILLIARD_ROOM],
-            [RoomEnum.WALL, RoomEnum.TILE, RoomEnum.TILE, RoomEnum.TILE, RoomEnum.TILE, RoomEnum.TILE, RoomEnum.WALL],
-            [RoomEnum.DINING_ROOM, RoomEnum.TILE, RoomEnum.TILE, RoomEnum.TILE, RoomEnum.TILE, RoomEnum.TILE,
-             RoomEnum.LIBRARY],
-            [RoomEnum.WALL, RoomEnum.TILE, RoomEnum.TILE, RoomEnum.TILE, RoomEnum.TILE, RoomEnum.TILE, RoomEnum.WALL],
-            [RoomEnum.WALL, RoomEnum.LOUNGE, RoomEnum.WALL, RoomEnum.HALL, RoomEnum.WALL, RoomEnum.STUDY,
-             RoomEnum.WALL],
+            [RoomEnum.STUDY, RoomEnum.HALLWAY_STUDY_HALL, RoomEnum.HALL, RoomEnum.HALLWAY_HALL_LOUNGE, RoomEnum.LOUNGE],
+            [RoomEnum.HALLWAY_STUDY_LIBRARY, RoomEnum.WALL, RoomEnum.HALLWAY_HALL_BILLIARD, RoomEnum.WALL, RoomEnum.HALLWAY_LOUNGE_DINING],
+            [RoomEnum.LIBRARY, RoomEnum.HALLWAY_LIBRARY_BILLIARD, RoomEnum.BILLIARD_ROOM, RoomEnum.HALLWAY_BILLIARD_DINING, RoomEnum.DINING_ROOM],
+            [RoomEnum.HALLWAY_LIBRARY_CONSERVATORY, RoomEnum.WALL, RoomEnum.HALLWAY_BILLIARD_BALLROOM, RoomEnum.WALL, RoomEnum.HALLWAY_DINING_KITCHEN],
+            [RoomEnum.CONSERVATORY, RoomEnum.HALLWAY_CONSERVATORY_BALLROOM, RoomEnum.BALLROOM, RoomEnum.HALLWAY_BALLROOM_KITCHEN, RoomEnum.KITCHEN],
         ]
 
         # Populate grid
@@ -138,8 +143,11 @@ class Board:
             print(f"appending {passage_row, passage_col}")
             valid_moves.append((passage_row, passage_col))
 
-        print(f"The valid moves for {character} are {valid_moves}")
-        return valid_moves
+        # Map the valid move coordinates to their corresponding RoomEnum names
+        valid_move_names = [self.grid[row][col].name for row, col in valid_moves]
+
+        print(f"The valid moves for {character} are {valid_move_names}")
+        return valid_move_names
 
     def get_room_position(self, target_room_enum):
         for row in range(len(self.grid)):
@@ -160,11 +168,19 @@ class Board:
     def get_player_room(self, character):
         character_x = self.character_positions[character][0]
         character_y = self.character_positions[character][1]
-        room = self.grid[character_x][character_y]
-        return room.name
+        return self.grid_default[character_x][character_y].name
 
-    def move_player(self, character, row, col):
-        # Check if the move is valid
+    # def get_player_room(self, character):
+    #     character_x = self.character_positions[character][0]
+    #     character_y = self.character_positions[character][1]
+    #     room = self.grid[character_x][character_y]
+    #     return room.name
+
+    def move_player(self, character, location_enum_name):
+        # Get respective row and col
+        location = getattr(RoomEnum, location_enum_name)
+
+        row, col = self.get_room_position(location)
 
         if self.check_valid_move(character, row, col):
             # Get the current position of the character
@@ -177,14 +193,11 @@ class Board:
             self.character_positions[character] = (row, col)
             print(f"Moved {character} from ({old_row, old_col}) to {row, col}")
 
-    # Overloaded function for location; just a tuple
-    def move_player(self, character, location):
-        row = location[1]
-        col = location[0]
-        self.move_player(self, character, row, col)
-
     def get_room_type(self, row, col):
         return self.grid[row][col].type
+
+    def get_available_rooms(self, character):
+        pass
 
     def get_state(self):
         board_state = []
