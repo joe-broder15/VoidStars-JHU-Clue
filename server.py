@@ -11,6 +11,7 @@ class Server:
 
         self.app.add_url_rule('/api/join_game', 'join_game', self.join_game, methods=['POST'])
         self.app.add_url_rule('/api/get_game_state', 'get_game_state', self.get_game_state, methods=['GET'])
+        self.app.add_url_rule('/api/get_available_moves', 'get_available_moves', self.get_available_moves, methods=['GET'])
         self.app.add_url_rule('/api/make_suggestion', 'make_suggestion', self.make_suggestion, methods=['POST'])
         self.app.add_url_rule('/api/make_accusation', 'make_accusation', self.make_accusation, methods=['POST'])
         self.app.add_url_rule('/api/can_suggest', 'can_suggest', self.can_suggest, methods=['GET'])
@@ -56,7 +57,13 @@ class Server:
             else:
                 return jsonify({'status': 'Failed, character in use'})
         return jsonify({'status': 'Failed, user does not exist'})
-    
+
+    def get_available_moves(self):
+        # get data and session id
+        data = request.get_json()
+        player_id = data["session_id"]
+        return jsonify({'availableMoves': self.game.get_available_moves(player_id)})
+
     def start_game(self):
         self.game.start_game()
         return jsonify({'status': 'Success, game started'})
