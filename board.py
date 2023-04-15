@@ -157,6 +157,12 @@ class Board:
     def get_player_position(self, character):
         return self.character_positions[character][0], self.character_positions[character][1]
 
+    def get_player_room(self, character):
+        character_x = self.character_positions[character][0]
+        character_y = self.character_positions[character][1]
+        room = self.grid[character_x][character_y]
+        return room.name
+
     def move_player(self, character, row, col):
         # Check if the move is valid
 
@@ -170,6 +176,12 @@ class Board:
             # Update player's position
             self.character_positions[character] = (row, col)
             print(f"Moved {character} from ({old_row, old_col}) to {row, col}")
+
+    # Overloaded function for location; just a tuple
+    def move_player(self, character, location):
+        row = location[1]
+        col = location[0]
+        self.move_player(self, character, row, col)
 
     def get_room_type(self, row, col):
         return self.grid[row][col].type

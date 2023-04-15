@@ -1,6 +1,7 @@
 from enum import Enum
 from player import *
 from card import *
+from board import *
 from event import *
 import random
 import string
@@ -28,6 +29,10 @@ class GameEngine:
 
     # generates a random session id
     #  TODO: CHECK FOR COLLISIONS
+    def start_game(self):
+        self.game_board = board
+        self.game_board.start_board(self.players)
+
     def gen_session_id(self, length):
         letters = string.ascii_lowercase
         return "".join(random.choice(letters) for i in range(16))
@@ -109,7 +114,7 @@ class GameEngine:
 
     # create an event
     def create_event(
-        self, event_type, player1_id, player2_id, character, location, weapon, card
+            self, event_type, player1_id, player2_id, character, location, weapon, card
     ):
         event = Event(event_type, "", "")
         player1 = self.get_player(player1_id)
@@ -187,17 +192,40 @@ class GameEngine:
 
         return True
 
+    # Location is tuple containing coordinates of the location to move to
     def move_player(self, player, location):
-        pass
+        self.game_board.move_player(self, player, location)
 
-    def make_suggestion(self, player, suggestion):
-        response = (
-            "The player suggested {} used the {} in the {} to commit the crime".format(
-                suggestion["char"], suggestion["weapon"], suggestion["loc"]
+    def make_suggestion(self, character, weapon, room):
+        if self.can_suggest(character, weapon, room):
+            response = (
+                "The player suggested {} used the {} in the {} to commit the crime".format(
+                    character, weapon, room
+                )
             )
-        )
         print("FROM GAME SUBSYSTEM: " + response)
+
+        #TODO: accept logic from get_state so player can choose which to reveal if multiple present
+        for player in self.players:
+            if character in player.cards:
+                self.create_event.private_response = "{player} reveals {character}!".format(player, character)
+                break
+            if weapon in player.cards:
+                self.create_event.private_response = "{player} reveals {weapon}!".format(player, weapon)
+                break
+            if room in player.cards:
+                self.create_event.private_response = "{player} reveals {room}!".format(player, room)
+                break
+
+        #TODO: accept logic from get_state so player can choose to accuse or end turn
+        #accuse
+
+
         return response
+
+    def can_suggest(self, character, weapon, room):
+        if self.game_board.get_player_room(character) != room:
+            return False
 
     # will take in user input, process it, and then update game state accordingly
     def process_input(self, input):
