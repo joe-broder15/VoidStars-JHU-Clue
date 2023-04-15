@@ -32,6 +32,56 @@ class Game:
     def gen_session_id(self):
         letters = string.ascii_lowercase
         return "".join(random.choice(letters) for i in range(16))
+    
+    
+    def start_game(self):
+        # self.game_status = GameStatus.START
+
+        # make deck
+        for i in WEAPON_CARDS:
+            self.deck.append(Card(i, "weapon"))
+
+        for i in ROOM_CARDS:
+            self.deck.append(Card(i, "room"))
+
+        for i in CHARACTERS:
+            self.deck.append(Card(i, "character"))
+
+        # get answer cards
+        tmp = []
+        random.shuffle(self.deck)
+        for c in self.deck:
+            if c.type == "weapon":
+                tmp.append(c)
+                self.deck.remove(c)
+
+        for c in self.deck:
+            if c.type == "room":
+                tmp.append(c)
+                self.deck.remove(c)
+
+        for c in self.deck:
+            if c.type == "character":
+                tmp.append(c)
+                self.deck.remove(c)
+
+        # deal cards to players
+        p = 0
+        while self.deck:
+            self.players[p].cards.add(self.deck.pop())
+            p = (p + 1) % len(self.players)
+
+        # reset deck to the held out cards
+        self.deck = tmp
+
+        # start board
+        self.game_board = Board()
+        self.game_board.start_board()
+
+        # start event
+        self.create_event(EventType.START)
+
+        return
 
     def get_state(self, session_id):
         player_states = [p.get_state(session_id) for p in self.players]
