@@ -15,7 +15,7 @@ GameStatus = Enum(
 )
 
 
-class GameEngine:
+class Game:
     def __init__(self):
         self.players = []
         self.winner = None
@@ -28,7 +28,7 @@ class GameEngine:
 
     # generates a random session id
     #  TODO: CHECK FOR COLLISIONS
-    def gen_session_id(self, length):
+    def gen_session_id(self):
         letters = string.ascii_lowercase
         return "".join(random.choice(letters) for i in range(16))
 
@@ -109,7 +109,7 @@ class GameEngine:
 
     # create an event
     def create_event(
-        self, event_type, player1_id, player2_id, character, location, weapon, card
+        self, event_type, player1_id=None, player2_id=None, character=None, location=None, weapon=None, card=None
     ):
         event = Event(event_type, "", "")
         player1 = self.get_player(player1_id)
@@ -186,6 +186,13 @@ class GameEngine:
         self.event_log.append(event)
 
         return True
+    
+    def end_turn(self, session_id):
+        if self.get_player(session_id):
+            self.game_turn = (self.game_turn + 1) % len(self.players)
+            self.create_event(EventType.TURN, session_id)
+            return True
+        
 
     def move_player(self, player, location):
         pass
