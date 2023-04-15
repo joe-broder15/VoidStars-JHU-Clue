@@ -188,6 +188,25 @@ class Board:
             return True
         return False
 
+    # Same as move_player, but doesn't validate the move.
+    # Used for suggestions
+    def teleport_player(self, character, location_enum_name):
+        # Get respective row and col
+        location = getattr(RoomEnum, location_enum_name)
+
+        row, col = self.get_room_position(location)
+
+        # Get the current position of the character
+        old_row, old_col = self.character_positions[character][0], self.character_positions[character][1]
+        self.grid[old_row][old_col].remove_character(character)
+
+        # Update grid
+        self.grid[row][col].add_character(character)
+        # Update player's position
+        self.character_positions[character] = (row, col)
+        print(f"Moved {character} from ({old_row, old_col}) to {row, col}")
+        return True
+
     def get_room_type(self, row, col):
         return self.grid[row][col].type
 
