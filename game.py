@@ -268,10 +268,10 @@ class Game:
         player = self.get_player(session_id)
         if player:
             ret = self.game_board.move_player(player.character, location)
-
+            pos = self.game_board.get_room_position(location)
             if ret:
                 if (
-                    self.game_board.get_room_type(location[0], location[1])
+                    self.game_board.get_room_type(pos[0], pos[1])
                     == RoomType.NORMAL
                 ):
                     self.get_player(session_id).can_suggest = True
