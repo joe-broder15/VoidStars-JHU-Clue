@@ -268,6 +268,8 @@ class Game:
                     == RoomType.NORMAL
                 ):
                     self.get_player(session_id).can_suggest = True
+                
+                self.create_event(EventType.MOVE, character=player.character, location=location)
 
             return ret
         return False
