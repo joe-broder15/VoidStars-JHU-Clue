@@ -233,10 +233,12 @@ class Game:
                                   accused, None, None, None, card)
                 break
 
-
-    def can_suggest(self, character, weapon, room):
-        if self.game_board.get_player_room(character) != room:
-            return False
+    def can_suggest(self, session_id):
+        player = self.get_player(session_id)
+        if player == None:
+            # HANDLE THIS
+            pass
+        return player.get_can_suggest()
 
     # will take in user input, process it, and then update game state accordingly
     def process_input(self, input):

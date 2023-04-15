@@ -174,7 +174,8 @@ def suggestionPhase(loc, char="unentered"):
 
 
 def canSuggest():
-    #TODO can suggest
+    resp = requests.post(SERVER_ADDRESS + "can_suggest", json={'session_id': session_id}).json()
+    print(resp)
     return False
 
 

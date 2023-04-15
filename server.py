@@ -62,7 +62,9 @@ class Server:
         pass
 
     def can_suggest(self):
-        pass
+        data = request.get_json()
+        player_id = data["session_id"]
+        return jsonify({'canSuggest': self.game.can_suggest(player_id)})
 
 def main():
     """ Main entry point of the app """

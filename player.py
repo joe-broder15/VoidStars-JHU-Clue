@@ -44,6 +44,12 @@ class Player:
                 return c
         return None
 
+    def set_can_suggest(self, can_suggest):
+        self.can_suggest = can_suggest
+
+    def get_can_suggest(self):
+        return self.can_suggest
+
     def get_state(self, session_id):
         out = {
             "session_id": self.player_session_id,
