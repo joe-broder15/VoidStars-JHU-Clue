@@ -93,6 +93,7 @@ class Game:
             "board": self.game_board.get_state(),
             "status": self.game_status,
             "turn": self.game_turn,
+            "turn_character":self.players[self.game_turn].character,
             "winner": self.winner,
         }
 
