@@ -35,6 +35,6 @@ class Event:
 
         return {
             "event_ID": self.event_ID,
-            "event_type": self.event_type,
+            "event_type": str(self.event_type),
             "response": resp,
         }
