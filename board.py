@@ -148,7 +148,19 @@ class Board:
         print(f"The valid moves for {character} are {valid_move_names}")
         return valid_move_names
 
-    def get_room_position(self, location_enum_name):
+    def get_room_position(self, target_room_enum):
+        for row in range(len(self.grid)):
+            for col in range(len(self.grid[row])):
+                grid_room = self.grid[row][col]
+                current_room_type = grid_room.name
+                target_room_type = target_room_enum.value[1]
+                if current_room_type == target_room_type:
+                    print(f"Room {target_room_enum} found at row {row}, col {col}.")
+                    return row, col
+
+        print(f"Room {target_room_enum} not found.")
+
+    def get_room_name_position(self, location_enum_name):
         location = getattr(RoomEnum, location_enum_name)
         for row in range(len(self.grid)):
             for col in range(len(self.grid[row])):
