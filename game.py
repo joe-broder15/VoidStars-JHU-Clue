@@ -1,6 +1,7 @@
 from enum import Enum
 from player import *
 from card import *
+from board import *
 from event import *
 import random
 import string
@@ -33,7 +34,19 @@ class Game:
         return "".join(random.choice(letters) for i in range(16))
 
     def get_state(self):
-        return "this will eventually be some state", self.demo
+        player_states = []
+        for player in self.players:
+            player_states.append((player.get_state()))
+
+        deck_states = []
+        for card in self.deck:
+            deck_states.append(card.get_state())
+
+        game_state = [player_states,
+                      deck_states,
+                      self.game_board.get_state()]
+
+        return game_state
 
     # create a new player and generate a session id
     def add_player(self, username):
@@ -194,17 +207,36 @@ class Game:
             return True
         
 
+    # Location is tuple containing coordinates of the location to move to
     def move_player(self, player, location):
-        pass
+        self.game_board.move_player(self, player, location)
 
-    def make_suggestion(self, player, suggestion):
-        response = (
-            "The player suggested {} used the {} in the {} to commit the crime".format(
-                suggestion["char"], suggestion["weapon"], suggestion["loc"]
-            )
-        )
-        print("FROM GAME SUBSYSTEM: " + response)
-        return response
+    def make_suggestion(self, session_id_accuser, session_id_accused, character, weapon, room, card):
+        accuser = session_id_accuser
+        accused = session_id_accused
+
+        if self.can_suggest(self.get_player(accuser), weapon, room):
+            self.create_event(self, EventType.SUGGEST, accuser,
+                              accused, room, weapon)
+
+        for player in self.players:
+            if character in player.cards:
+                self.create_event(self, EventType.SHOW, accuser,
+                                  accused, None, None, None, card)
+                break
+            if weapon in player.cards:
+                self.create_event(self, EventType.SHOW, accuser,
+                                  accused, None, None, None, card)
+                break
+            if room in player.cards:
+                self.create_event(self, EventType.SHOW, accuser,
+                                  accused, None, None, None, card)
+                break
+
+
+    def can_suggest(self, character, weapon, room):
+        if self.game_board.get_player_room(character) != room:
+            return False
 
     # will take in user input, process it, and then update game state accordingly
     def process_input(self, input):
