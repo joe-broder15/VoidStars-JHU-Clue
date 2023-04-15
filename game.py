@@ -276,8 +276,8 @@ class Game:
         return False
 
     def get_available_moves(self, session_id):
-        character = self.get_player(session_id)
-        return self.game_board.get_valid_moves(character)
+        player = self.get_player(session_id)
+        return self.game_board.get_valid_moves(player.character)
 
     def make_suggestion(self, session_id_accuser, session_id_accused, character, weapon, room, card):
         accuser = session_id_accuser
