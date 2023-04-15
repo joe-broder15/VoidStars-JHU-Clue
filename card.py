@@ -1,3 +1,17 @@
+ROOM_CARDS = [
+    "study",
+    "hall",
+    "lounge",
+    "dining room",
+    "billiard room",
+    "library",
+    "conservatory",
+    "ballroom",
+    "kitchen",
+]
+WEAPON_CARDS = ["knife", "lead pipe", "candlestick", "revolver", "rope", "wrench"]
+
+
 class Card:
     # constructor
     def __init__(self, name, cardType):
