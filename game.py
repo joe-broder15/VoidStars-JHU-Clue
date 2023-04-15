@@ -32,8 +32,7 @@ class Game:
     def gen_session_id(self):
         letters = string.ascii_lowercase
         return "".join(random.choice(letters) for i in range(16))
-    
-    
+
     def start_game(self):
         # self.game_status = GameStatus.START
 
@@ -93,7 +92,7 @@ class Game:
             "board": self.game_board.get_state(),
             "status": self.game_status,
             "turn": self.game_turn,
-            "turn_character":self.players[self.game_turn].character,
+            "turn_character": self.players[self.game_turn].character,
             "winner": self.winner,
         }
 
@@ -173,7 +172,14 @@ class Game:
 
     # create an event
     def create_event(
-        self, event_type, player1_id=None, player2_id=None, character=None, location=None, weapon=None, card=None
+        self,
+        event_type,
+        player1_id=None,
+        player2_id=None,
+        character=None,
+        location=None,
+        weapon=None,
+        card=None,
     ):
         event = Event(event_type, "", "")
         player1 = self.get_player(player1_id)
@@ -250,7 +256,7 @@ class Game:
         self.event_log.append(event)
 
         return True
-    
+
     def end_turn(self, session_id):
         if self.get_player(session_id):
             self.game_turn = (self.game_turn + 1) % len(self.players)
@@ -269,8 +275,10 @@ class Game:
                     == RoomType.NORMAL
                 ):
                     self.get_player(session_id).can_suggest = True
-                
-                self.create_event(EventType.MOVE, character=player.character, location=location)
+
+                self.create_event(
+                    EventType.MOVE, character=player.character, location=location
+                )
 
             return ret
         return False
@@ -279,19 +287,29 @@ class Game:
         player = self.get_player(session_id)
         return self.game_board.get_valid_moves(player.character)
 
-    def make_suggestion(self, session_id_accuser, session_id_accused, character, weapon, room, card):
+    def make_suggestion(
+        self, session_id_accuser, session_id_accused, character, weapon, room, card
+    ):
         accuser = session_id_accuser
         accused = session_id_accused
         accused_character = self.get_player(accused)
 
         if self.can_suggest(self.get_player(accuser), weapon, room):
             # Create SUGGEST event
-            self.create_event(self, EventType.SUGGEST, accuser,
-                              accused, room, weapon)
+            self.create_event(self, EventType.SUGGEST, accuser, accused, room, weapon)
 
             # Move accused player to accuser's room
             accuser_room = self.game_board.get_player_room(accuser)
-            self.create_event(self, EventType.MOVE, None, None, accused_character, accuser_room, None, None)
+            self.create_event(
+                self,
+                EventType.MOVE,
+                None,
+                None,
+                accused_character,
+                accuser_room,
+                None,
+                None,
+            )
             self.game_board.teleport_player(accused, accuser_room)
 
             # For each other player, go through their cards and see if there's
@@ -310,8 +328,16 @@ class Game:
                         shown_card = room
 
                     if shown_card is not None:
-                        self.create_event(self, EventType.SHOW, accuser,
-                                          accused, None, None, None, shown_card)
+                        self.create_event(
+                            self,
+                            EventType.SHOW,
+                            accuser,
+                            accused,
+                            None,
+                            None,
+                            None,
+                            shown_card,
+                        )
                         break
 
     def can_suggest(self, session_id):
