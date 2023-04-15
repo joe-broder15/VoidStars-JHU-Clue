@@ -32,8 +32,7 @@ class Game:
     def gen_session_id(self):
         letters = string.ascii_lowercase
         return "".join(random.choice(letters) for i in range(16))
-    
-    
+
     def start_game(self):
         # self.game_status = GameStatus.START
 
@@ -93,7 +92,7 @@ class Game:
             "board": self.game_board.get_state(),
             "status": self.game_status,
             "turn": self.game_turn,
-            "turn_character":self.players[self.game_turn].character,
+            "turn_character": self.players[self.game_turn].character,
             "winner": self.winner,
         }
 
@@ -173,7 +172,14 @@ class Game:
 
     # create an event
     def create_event(
-        self, event_type, player1_id=None, player2_id=None, character=None, location=None, weapon=None, card=None
+        self,
+        event_type,
+        player1_id=None,
+        player2_id=None,
+        character=None,
+        location=None,
+        weapon=None,
+        card=None,
     ):
         event = Event(event_type, "", "")
         player1 = self.get_player(player1_id)
@@ -250,7 +256,7 @@ class Game:
         self.event_log.append(event)
 
         return True
-    
+
     def end_turn(self, session_id):
         if self.get_player(session_id):
             self.game_turn = (self.game_turn + 1) % len(self.players)
@@ -261,16 +267,18 @@ class Game:
     def move_player(self, session_id, location):
         player = self.get_player(session_id)
         if player:
-            ret = self.game_board.move_player(self, player.character, location)
-
+            ret = self.game_board.move_player(player.character, location)
+            pos = self.game_board.get_room_position(location)
             if ret:
                 if (
-                    self.game_board.get_room_type(location[0], location[1])
+                    self.game_board.get_room_type(pos[0], pos[1])
                     == RoomType.NORMAL
                 ):
                     self.get_player(session_id).can_suggest = True
-                
-                self.create_event(EventType.MOVE, character=player.character, location=location)
+
+                self.create_event(
+                    EventType.MOVE, character=player.character, location=location
+                )
 
             return ret
         return False
@@ -279,13 +287,14 @@ class Game:
         player = self.get_player(session_id)
         return self.game_board.get_valid_moves(player.character)
 
-    def make_suggestion(self, session_id_accuser, accused_character, character, weapon, room, card):
+    def make_suggestion(
+        self, session_id_accuser, accused_character, character, weapon, room, card
+    ):
         accuser_character = session_id_accuser
 
         if self.can_suggest(self.get_player(accuser_character), weapon, room):
             # Create SUGGEST event
-            self.create_event(self, EventType.SUGGEST, session_id_accuser,
-                              accused_character, room, weapon)
+            self.create_event(self, EventType.SUGGEST, session_id_accuser, accused_character, room, weapon)
 
             # Move accused character to accuser's room if
             # the character is on the board
@@ -311,8 +320,16 @@ class Game:
                         shown_card = room
 
                     if shown_card is not None:
-                        self.create_event(self, EventType.SHOW, accuser_character,
-                                          accused_character, None, None, None, shown_card)
+                        self.create_event(
+                            self,
+                            EventType.SHOW,
+                            accuser_character,
+                            accused_character,
+                            None,
+                            None,
+                            None,
+                            shown_card,
+                        )
                         break
 
     def can_suggest(self, session_id):
