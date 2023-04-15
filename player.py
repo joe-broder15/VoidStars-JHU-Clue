@@ -5,7 +5,6 @@ CHARACTERS = [
     "Mr. Green",
     "Mrs. Peacock",
     "Professor Plum",
-    "Mr. Body",
 ]
 
 

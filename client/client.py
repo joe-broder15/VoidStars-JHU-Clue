@@ -10,11 +10,13 @@ board = []
 current_room = ""
 last_event_displayed = {}
 
+
 def printMenu(menuList):
     i = 1
     for item in menuList:
         print(str(i) + ": " + item)
         i += 1
+
 
 def getInput(allowAccus=False):
     if allowAccus:
@@ -25,6 +27,7 @@ def getInput(allowAccus=False):
         #TODO do accusation
         return "accuse"
     return inp
+
 
 def makeAccusation(char="unentered", weapon="unentered"):
     loc = ""
@@ -114,16 +117,12 @@ def movementPhase():
     input = getInput(True)
     if input == "accuse":
         return "accuse"
-    moveLocation = ""
-    if input == "1":
-        moveLocation = "Library"
-    elif input == "2":
-        moveLocation = "Billiard Room"
-    else:
+    if (not input.isdigit()) or int(input) < 1 or int(input) > len(move_options):
         print("That was not a valid input")
         return movementPhase()
+    move_location = int(input) - 1
     #TODO Send location data to server and print response saying succesfully updated location
-    return moveLocation
+    return move_location
 
 
 def suggestionPhase(loc, char="unentered"):
@@ -179,6 +178,14 @@ def canSuggest():
     return False
 
 
+def printRow():
+    row_1 = ""
+    row_2 = ""
+    row_3 = ""
+    row_4 = ""
+    row_5 = ""
+
+
 def printBoard():
     print("BOARD")
     #TODO print board
@@ -215,15 +222,39 @@ def doTurn():
     #TODO end turn
 
 
+def selectChar(available_chars):
+    print("Here are the available characters. Which one do you want?")
+    printMenu(available_chars)
+    input = getInput(False)
+    if (not input.isdigit()) or int(input) < 1 or int(input) > len(available_chars):
+        print("That was not a valid input")
+        return selectChar(available_chars)
+    return available_chars[int(input) - 1]
+
 def startGame():
     global session_id
     global character
+    resp = requests.post(SERVER_ADDRESS + "join_game", json={'username': "test"}).json()['session_id']
+    session_id = resp['session_id']
+    while character == "":
+        available_chars = resp['available_characters']
+        temp_char = selectChar(available_chars)
+        resp2 = requests.post(SERVER_ADDRESS + "set_character", json={'session_id': session_id, "character": temp_char})
+        print(resp2)
+        print(resp2.json()['status'])
+        if resp2.json()['status'] == 'Success':
+            character = temp_char
+    print("Do you want to start the game or wait for more players?")
+    printMenu(["start", "wait"])
+    #input = getInput(False)
     #TODO start game
+
 
 def doGame():
     #TODO get status
-    #TODO if status is your turn do turn
+    #requests.get("http://127.0.0.1:5742/api/get_game_state", params={'session_id': session_id})
 
+    #TODO if status is your turn do turn
     doTurn()
 
     #time.sleep(2)

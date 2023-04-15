@@ -14,9 +14,8 @@ class Server:
         self.app.add_url_rule('/api/make_suggestion', 'make_suggestion', self.make_suggestion, methods=['POST'])
         self.app.add_url_rule('/api/make_accusation', 'make_accusation', self.make_accusation, methods=['POST'])
         self.app.add_url_rule('/api/can_suggest', 'can_suggest', self.can_suggest, methods=['GET'])
+        self.app.add_url_rule('/api/set_character', 'set_character', self.set_character, methods=['POST'])
         self.game = Game()
-        
-        self.t.start()
 
     def start_server(self):
         self.app.run(host='0.0.0.0', port='5742')
