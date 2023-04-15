@@ -148,17 +148,18 @@ class Board:
         print(f"The valid moves for {character} are {valid_move_names}")
         return valid_move_names
 
-    def get_room_position(self, target_room_enum):
+    def get_room_position(self, location_enum_name):
+        location = getattr(RoomEnum, location_enum_name)
         for row in range(len(self.grid)):
             for col in range(len(self.grid[row])):
                 grid_room = self.grid[row][col]
                 current_room_type = grid_room.name
-                target_room_type = target_room_enum.value[1]
+                target_room_type = location.value[1]
                 if current_room_type == target_room_type:
-                    print(f"Room {target_room_enum} found at row {row}, col {col}.")
+                    print(f"Room {location} found at row {row}, col {col}.")
                     return row, col
 
-        print(f"Room {target_room_enum} not found.")
+        print(f"Room {location} not found.")
 
     # Input: RoomEnum.KITCHEN
     def get_player_position(self, character):
@@ -169,6 +170,8 @@ class Board:
         character_y = self.character_positions[character][1]
         return self.grid_default[character_x][character_y].name
 
+    # Accepts character name and name of the enum
+    # for example, ("Miss Scarlett", HALLWAY_HALL_BILLIARD)
     def move_player(self, character, location_enum_name):
         # Get respective row and col
         location = getattr(RoomEnum, location_enum_name)

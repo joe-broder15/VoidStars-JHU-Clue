@@ -279,26 +279,27 @@ class Game:
         player = self.get_player(session_id)
         return self.game_board.get_valid_moves(player.character)
 
-    def make_suggestion(self, session_id_accuser, session_id_accused, character, weapon, room, card):
-        accuser = session_id_accuser
-        accused = session_id_accused
-        accused_character = self.get_player(accused)
+    def make_suggestion(self, session_id_accuser, accused_character, character, weapon, room, card):
+        accuser_character = session_id_accuser
 
-        if self.can_suggest(self.get_player(accuser), weapon, room):
+        if self.can_suggest(self.get_player(accuser_character), weapon, room):
             # Create SUGGEST event
-            self.create_event(self, EventType.SUGGEST, accuser,
-                              accused, room, weapon)
+            self.create_event(self, EventType.SUGGEST, session_id_accuser,
+                              accused_character, room, weapon)
 
-            # Move accused player to accuser's room
-            accuser_room = self.game_board.get_player_room(accuser)
-            self.create_event(self, EventType.MOVE, None, None, accused_character, accuser_room, None, None)
-            self.game_board.teleport_player(accused, accuser_room)
+            # Move accused character to accuser's room if
+            # the character is on the board
+            all_characters = [player.name for player in self.players]
+            if accused_character in all_characters:
+                accuser_room = self.game_board.get_player_room(accuser_character)
+                self.create_event(self, EventType.MOVE, None, None, accused_character, accuser_room, None, None)
+                self.game_board.teleport_player(accused_character, accuser_room)
 
             # For each other player, go through their cards and see if there's
             # a match with those in the suggestion
             # TODO: go through characters in clockwise order
             for player in self.players:
-                if player == accuser:
+                if player == accuser_character:
                     continue
                 else:
                     shown_card = None
@@ -310,8 +311,8 @@ class Game:
                         shown_card = room
 
                     if shown_card is not None:
-                        self.create_event(self, EventType.SHOW, accuser,
-                                          accused, None, None, None, shown_card)
+                        self.create_event(self, EventType.SHOW, accuser_character,
+                                          accused_character, None, None, None, shown_card)
                         break
 
     def can_suggest(self, session_id):
