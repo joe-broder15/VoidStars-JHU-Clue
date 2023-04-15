@@ -5,13 +5,6 @@ from threading import Thread
 import random
 import time
 
-
-def update_skeletal_state(game):
-    while True:
-        num = random.randint(1,100)
-        game.update_state(num)
-        time.sleep(5)
-
 class Server:
     def __init__(self):
         self.app = Flask(__name__)
@@ -22,9 +15,7 @@ class Server:
         self.app.add_url_rule('/api/make_accusation', 'make_accusation', self.make_accusation, methods=['POST'])
         self.app.add_url_rule('/api/can_suggest', 'can_suggest', self.can_suggest, methods=['GET'])
         self.game = Game()
-
-        tokens = {}
-        self.t = Thread(target=update_skeletal_state, args=(self.game,))
+        
         self.t.start()
 
     def start_server(self):
@@ -45,7 +36,7 @@ class Server:
             return jsonify({'status': 'Failed, user does not exist'})
 
     # adds a player to a game with a username
-    def join_game(self, game_id):
+    def join_game(self):
         # get data and add a player
         data = request.get_json()
         session_id = self.game.add_player(data["username"])
