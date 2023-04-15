@@ -121,7 +121,6 @@ class Board:
         return True
 
     def get_valid_moves(self, character):
-
         # Get the character's coordinates on the grid, if they have any
         current_row, current_col = self.character_positions[character]
         valid_moves = []
@@ -169,12 +168,6 @@ class Board:
         character_x = self.character_positions[character][0]
         character_y = self.character_positions[character][1]
         return self.grid_default[character_x][character_y].name
-
-    # def get_player_room(self, character):
-    #     character_x = self.character_positions[character][0]
-    #     character_y = self.character_positions[character][1]
-    #     room = self.grid[character_x][character_y]
-    #     return room.name
 
     def move_player(self, character, location_enum_name):
         # Get respective row and col

@@ -23,62 +23,12 @@ class Game:
         self.game_turn = 0
         self.game_status = 0
         self.game_board = None
-        self.deck = []
+        self.deck = set()
         self.event_log = []
         self.demo = 0  # state to be set by a user during the demo
 
     # generates a random session id
     #  TODO: CHECK FOR COLLISIONS
-
-    def start_game(self):
-        # self.game_status = GameStatus.START
-
-        # make deck
-        for i in WEAPON_CARDS:
-            self.deck.append(Card(i, "weapon"))
-
-        for i in ROOM_CARDS:
-            self.deck.append(Card(i, "room"))
-
-        for i in CHARACTERS:
-            self.deck.append(Card(i, "character"))
-
-        # get answer cards
-        tmp = []
-        random.shuffle(self.deck)
-        for c in self.deck:
-            if c.type == "weapon":
-                tmp.append(c)
-                self.deck.remove(c)
-
-        for c in self.deck:
-            if c.type == "room":
-                tmp.append(c)
-                self.deck.remove(c)
-
-        for c in self.deck:
-            if c.type == "character":
-                tmp.append(c)
-                self.deck.remove(c)
-
-        # deal cards to players
-        p = 0
-        while self.deck:
-            self.players[p].cards.add(self.deck.pop())
-            p = (p + 1) % len(self.players)
-
-        # reset deck to the held out cards
-        self.deck = tmp
-
-        # start board
-        self.game_board = Board()
-        self.game_board.start_board()
-
-        # start event
-        self.create_event(EventType.START)
-
-        return
-
     def gen_session_id(self):
         letters = string.ascii_lowercase
         return "".join(random.choice(letters) for i in range(16))
@@ -92,7 +42,9 @@ class Game:
         for card in self.deck:
             deck_states.append(card.get_state())
 
-        game_state = [player_states, deck_states, self.game_board.get_state()]
+        game_state = [player_states,
+                      deck_states,
+                      self.game_board.get_state()]
 
         return game_state
 
@@ -170,14 +122,7 @@ class Game:
 
     # create an event
     def create_event(
-        self,
-        event_type,
-        player1_id=None,
-        player2_id=None,
-        character=None,
-        location=None,
-        weapon=None,
-        card=None,
+        self, event_type, player1_id=None, player2_id=None, character=None, location=None, weapon=None, card=None
     ):
         event = Event(event_type, "", "")
         player1 = self.get_player(player1_id)
@@ -254,7 +199,7 @@ class Game:
         self.event_log.append(event)
 
         return True
-
+    
     def end_turn(self, session_id):
         if self.get_player(session_id):
             self.game_turn = (self.game_turn + 1) % len(self.players)
@@ -265,35 +210,37 @@ class Game:
     def move_player(self, player, location):
         self.game_board.move_player(self, player, location)
 
-    def make_suggestion(
-        self, session_id_accuser, session_id_accused, character, weapon, room, card
-    ):
+    def get_available_moves(self, player):
+        return self.game_board.get_valid_moves(player)
+
+    def make_suggestion(self, session_id_accuser, session_id_accused, character, weapon, room, card):
         accuser = session_id_accuser
         accused = session_id_accused
 
         if self.can_suggest(self.get_player(accuser), weapon, room):
-            self.create_event(self, EventType.SUGGEST, accuser, accused, room, weapon)
+            self.create_event(self, EventType.SUGGEST, accuser,
+                              accused, room, weapon)
 
         for player in self.players:
             if character in player.cards:
-                self.create_event(
-                    self, EventType.SHOW, accuser, accused, None, None, None, card
-                )
+                self.create_event(self, EventType.SHOW, accuser,
+                                  accused, None, None, None, card)
                 break
             if weapon in player.cards:
-                self.create_event(
-                    self, EventType.SHOW, accuser, accused, None, None, None, card
-                )
+                self.create_event(self, EventType.SHOW, accuser,
+                                  accused, None, None, None, card)
                 break
             if room in player.cards:
-                self.create_event(
-                    self, EventType.SHOW, accuser, accused, None, None, None, card
-                )
+                self.create_event(self, EventType.SHOW, accuser,
+                                  accused, None, None, None, card)
                 break
 
-    def can_suggest(self, character, weapon, room):
-        if self.game_board.get_player_room(character) != room:
-            return False
+    def can_suggest(self, session_id):
+        player = self.get_player(session_id)
+        if player == None:
+            # HANDLE THIS
+            pass
+        return player.get_can_suggest()
 
     # will take in user input, process it, and then update game state accordingly
     def process_input(self, input):
