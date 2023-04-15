@@ -16,6 +16,7 @@ class Server:
         self.app.add_url_rule('/api/can_suggest', 'can_suggest', self.can_suggest, methods=['GET'])
         self.app.add_url_rule('/api/set_character', 'set_character', self.set_character, methods=['POST'])
         self.app.add_url_rule('/api/start_game', 'start_game', self.start_game, methods=['POST'])
+        self.app.add_url_rule('/api/end_turn', 'end_turn', self.end_turn, methods=['POST'])
         self.game = Game()
 
     def start_server(self):
@@ -58,8 +59,13 @@ class Server:
     def start_game(self):
         self.game.start_game()
         return jsonify({'status': 'Success, game started'})
+    
+    def end_turn(self):
+        data = request.get_json()
+        player_id = data["session_id"]
+        self.game.end_turn(session_id)
+        return {"status": "Success, player turn ended"}
         
-
     def get_game_state(self):
         pass
 

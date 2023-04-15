@@ -64,7 +64,7 @@ class Game:
         # deal cards to players
         p = 0
         while self.deck:
-            self.players[i].append(self.deck.pop())
+            self.players[p].cards.add(self.deck.pop())
             p = (p + 1) % len(self.players)
 
         # reset deck to the held out cards
