@@ -25,7 +25,7 @@ class Room:
         return {
             'name': self.name,
             'characters': list(self.characters),
-            'type': self.type,
+            'type': int(self.type),
             'travel_options': list(self.travel_options),
             'location': (self.row, self.col)
         }

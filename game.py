@@ -23,7 +23,7 @@ class Game:
         self.game_turn = 0
         self.game_status = 0
         self.game_board = None
-        self.deck = set()
+        self.deck = []
         self.event_log = []
         self.demo = 0  # state to be set by a user during the demo
 
@@ -76,7 +76,7 @@ class Game:
 
         # start board
         self.game_board = Board()
-        self.game_board.start_board()
+        self.game_board.start_board([p.character for p in self.players])
 
         # start event
         self.create_event(EventType.START)
@@ -93,6 +93,7 @@ class Game:
             "board": self.game_board.get_state(),
             "status": self.game_status,
             "turn": self.game_turn,
+            "turn_character":self.players[self.game_turn].character,
             "winner": self.winner,
         }
 
@@ -268,6 +269,8 @@ class Game:
                     == RoomType.NORMAL
                 ):
                     self.get_player(session_id).can_suggest = True
+                
+                self.create_event(EventType.MOVE, character=player.character, location=location)
 
             return ret
         return False

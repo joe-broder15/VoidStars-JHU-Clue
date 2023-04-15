@@ -1,8 +1,8 @@
-from enum import Enum
+from enum import Enum, IntEnum
 from room import Room
 
 
-class RoomType(Enum):
+class RoomType(IntEnum):
     NORMAL = 1
     TILE = 2
     HALLWAY = 3
