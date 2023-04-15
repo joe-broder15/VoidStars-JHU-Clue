@@ -83,16 +83,18 @@ class Game:
         letters = string.ascii_lowercase
         return "".join(random.choice(letters) for i in range(16))
 
-    def get_state(self):
-        player_states = []
-        for player in self.players:
-            player_states.append((player.get_state()))
+    def get_state(self, session_id):
+        player_states = [p.get_state(session_id) for p in self.players]
+        event_states = [e.get_state(session_id) for e in self.event_log]
 
-        deck_states = []
-        for card in self.deck:
-            deck_states.append(card.get_state())
-
-        game_state = [player_states, deck_states, self.game_board.get_state()]
+        game_state = {
+            "players": player_states,
+            "events": event_states,
+            "board": self.game_board.get_state(),
+            "status": self.game_status,
+            "turn": self.game_turn,
+            "winner": self.winner,
+        }
 
         return game_state
 

@@ -76,7 +76,12 @@ class Server:
         return jsonify({'status': 'Failed, player not moved'})
         
     def get_game_state(self):
-        pass
+        data = request.get_json()
+        player_id = data["session_id"]
+        if self.game.get_player(player_id):
+            return jsonify({"status": "success", "state":self.game.get_state(player_id)})
+        else:
+            return jsonify({'status': 'Failed, bad session id'})
 
     def make_suggestion(self):
         pass
