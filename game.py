@@ -5,6 +5,16 @@ from event import *
 import random
 import string
 
+GameStatus = Enum(
+    "GameStatus",
+    [
+        "WAITING",
+        "START",
+        "OVER",
+    ],
+)
+
+
 class GameEngine:
     def __init__(self):
         self.players = []
@@ -68,16 +78,40 @@ class GameEngine:
         player.set_character(session_id, character)
         return True
 
+    # ends the game
     def end_game(self, session_id):
-        pass
+        if self.get_player(session_id):
+            self.game_status = GameStatus.OVER
 
+    # accuse a player
     def accuse(self, session_id, character, weapon, room):
-        pass
+        player = self.get_player(session_id)
+        if player == None:
+            # HANDLE THIS
+            pass
 
+        # create the event for the accusation
+        self.create_event(
+            EventType.ACCUSE, session_id, None, character, room, weapon, None
+        )
+
+        # check if the guess was correct
+        if sum([c.contains_clue(character, room, weapon) for c in self.deck]) == 3:
+            self.create_event(EventType.WIN, session_id, None, None, None, None, None)
+            self.end_game(session_id)
+            return True
+        else:
+            self.create_event(EventType.LOSE, session_id, None, None, None, None, None)
+            player.is_out = True
+            return False
+
+    # create an event
     def create_event(
-        self, event_type, player1, player2, character, location, weapon, card
+        self, event_type, player1_id, player2_id, character, location, weapon, card
     ):
-        event = Event(event_type, "", "", [])
+        event = Event(event_type, "", "")
+        player1 = self.get_player(player1_id)
+        player2 = self.get_player(player2_id)
 
         # create event for a player winning
         if event_type == EventType.WIN:
@@ -139,7 +173,9 @@ class GameEngine:
 
         # event for a turn being made
         elif event_type == EventType.TURN:
-            event.private_IDs
+            event.private_response = "{player} has finished their turn".format(
+                player1.name
+            )
 
         # event for a player being ready
         elif event_type == EventType.READY:

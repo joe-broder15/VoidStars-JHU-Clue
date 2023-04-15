@@ -16,7 +16,7 @@ class Player:
         self.cards = set()
         self.character = character
         self.can_suggest = True
-        self.is_out = True
+        self.is_out = False
 
     # validate a session id
     def is_player(self, session_id):
@@ -43,13 +43,17 @@ class Player:
         for c in self.cards:
             if c.contains_clue(character, location, weapon):
                 return c
+        return None
 
-    def get_state(self):
-        cards = [c.get_state() for c in cards]
-        return {
+    def get_state(self, session_id):
+        out = {
             "session_id": self.player_session_id,
             "name": self.name,
             "character": self.character,
             "can_suggest": self.can_suggest,
-            "cards": cards,
         }
+
+        if self.is_player(session_id):
+            out["cards"] = [c.get_state() for c in self.cards]
+
+        return out
