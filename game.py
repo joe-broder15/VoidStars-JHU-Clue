@@ -76,7 +76,7 @@ class Game:
 
         # start board
         self.game_board = Board()
-        self.game_board.start_board()
+        self.game_board.start_board([p.character for p in self.players])
 
         # start event
         self.create_event(EventType.START)
