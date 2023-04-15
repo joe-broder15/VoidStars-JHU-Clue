@@ -207,8 +207,20 @@ class Game:
             return True
 
     # Location is tuple containing coordinates of the location to move to
-    def move_player(self, player, location):
-        self.game_board.move_player(self, player, location)
+    def move_player(self, session_id, location):
+        player = self.get_player(session_id)
+        if player:
+            ret = self.game_board.move_player(self, player.character, location)
+
+            if ret:
+                if (
+                    self.game_board.get_room_type(location[0], location[1])
+                    == RoomType.NORMAL
+                ):
+                    self.get_player(session_id).can_suggest = True
+
+            return ret
+        return False
 
     def get_available_moves(self, player):
         return self.game_board.get_valid_moves(player)

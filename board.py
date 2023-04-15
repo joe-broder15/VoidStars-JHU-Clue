@@ -185,6 +185,8 @@ class Board:
             # Update player's position
             self.character_positions[character] = (row, col)
             print(f"Moved {character} from ({old_row, old_col}) to {row, col}")
+            return True
+        return False
 
     def get_room_type(self, row, col):
         return self.grid[row][col].type
@@ -198,8 +200,7 @@ class Board:
             for cell in row:
                 if cell.type != RoomType.WALL:
                     room_state = cell.get_state()
-                    if room_state['characters']:
-                        board_state.append(room_state)
+                    board_state.append(room_state)
         return board_state
 
 
