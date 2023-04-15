@@ -15,6 +15,7 @@ class Server:
         self.app.add_url_rule('/api/make_accusation', 'make_accusation', self.make_accusation, methods=['POST'])
         self.app.add_url_rule('/api/can_suggest', 'can_suggest', self.can_suggest, methods=['GET'])
         self.app.add_url_rule('/api/set_character', 'set_character', self.set_character, methods=['POST'])
+        self.app.add_url_rule('/api/start_game', 'start_game', self.start_game, methods=['POST'])
         self.game = Game()
 
     def start_server(self):
@@ -53,6 +54,10 @@ class Server:
             else:
                 return jsonify({'status': 'Failed, character in use'})
         return jsonify({'status': 'Failed, user does not exist'})
+    
+    def start_game(self):
+        self.game.start_game()
+        return jsonify({'status': 'Success, game started'})
         
 
     def get_game_state(self):
