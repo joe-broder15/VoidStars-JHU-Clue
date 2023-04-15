@@ -41,27 +41,52 @@ class Server:
         print("Server got suggestion: " + str(request.json))
         return jsonify({'state': self.game.make_suggestion("player", suggestion)})
 
+    # accuse a player
     def make_accusation(self):
-        suggestion = request.json
-        print("Server got accusation: " + str(request.json))
-        return jsonify({'state': self.game.make_accusation("player", suggestion)})
+        # check for a token
+        token = request.headers.get('Authorization')
+        if token in self.tokens:
+            # get json and session id
+            data = request.get_json()
+            player_id = self.tokens[token]
+            print("Server got accusation: " + str(request.json))
 
+            # try to accuse a player and return a cooresponding stratus
+            if self.game.accuse(player_id, data["character"], data["weapon"], data["room"]):
+                return jsonify({'status': 'Success, you won the game'})
+            else:
+                return jsonify({'status': 'Failure, your guess was wrong'})
+        else:
+            return jsonify({'error': 'Unauthorized'}), 401
+
+    # adds a player to a game with a username
     def join_game(self, game_id):
         if self.game is not None:
-#            player_id = self.game.add_player()
+            # get data and add a player
+            data = request.get_json()
+            player_id = self.game.add_player(data["username"])
+
+            # create a token based on the session id
             token = uuid.uuid4().hex
             self.tokens[token] = player_id
             return jsonify({'token': token})
         else:
             return jsonify({'error': 'Game does not exist'}), 404
-
-    def update_game(self):
+    
+    # set a character
+    def set_character(self):
+        # check for a token
         token = request.headers.get('Authorization')
         if token in self.tokens:
-            player_id = self.tokens[token]
+            # get data and session id
             data = request.get_json()
-#            self.game.update_game(data)
-            return jsonify({'status': 'Success'})
+            player_id = self.tokens[token]
+
+            # try to set a character
+            if self.game.set_character(player_id, data["character"]):
+                return jsonify({'status': 'Success'})
+            else:
+                return jsonify({'status': 'Failed, character in use'})
         else:
             return jsonify({'error': 'Unauthorized'}), 401
 

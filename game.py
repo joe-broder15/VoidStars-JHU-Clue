@@ -1,49 +1,203 @@
 from enum import Enum
+from player import *
+from card import *
+from event import *
+import random
+import string
 
-# TODO - CREATE SOME ENUMS SO WE AREN'T CONSTANTLY REFERING TO PLAYERS, ROOMS, AND CARDS AS NUMBERS
+GameStatus = Enum(
+    "GameStatus",
+    [
+        "WAITING",
+        "START",
+        "OVER",
+    ],
+)
 
-class Game:
+
+class GameEngine:
     def __init__(self):
-        """
-        just listing out all the different pieces of information we will need to track,
-        this in no way determined exctly which ones will merit their own members
-        """
-        self.players = None  # list of players
-        self.board = None  # the board
-        self.turn = None  # who's turn is it
-        self.solutions = None  # solution cards
-        self.playercards = None  # cards each player has in their hand
-        self.weapons = None  # list of weapons
-        self.out = None  # players who have already given accusations
-        self.last = "" # a string decribing what the last move made was
+        self.players = []
+        self.winner = None
+        self.game_turn = 0
+        self.game_status = 0
+        self.game_board = None
+        self.deck = set()
+        self.event_log = []
+        self.demo = 0  # state to be set by a user during the demo
 
-        self.demo = 0 # state to be set by a user during the demo
+    # generates a random session id
+    #  TODO: CHECK FOR COLLISIONS
+    def gen_session_id(self, length):
+        letters = string.ascii_lowercase
+        return "".join(random.choice(letters) for i in range(16))
 
     def get_state(self):
         return "this will eventually be some state", self.demo
 
-    def update_state(self, number):
-        self.demo = number
-        return
-    
-    def get_turn(self):
-        pass
+    # create a new player and generate a session id
+    def add_player(self, username):
+        # generate a session id
+        session_id = self.gen_session_id()
+
+        # make a new player and add them to the list of players
+        p = Player(session_id, username, None)
+        self.players.append(p)
+
+        # list comprehension to build list of available characters
+        available_characters = [c for c in CHARACTERS if self.is_char_avail(c)]
+
+        return {
+            "session_id": session_id,
+            "available_characters": available_characters,
+        }
+
+    # get a player object by session id
+    def get_player(self, session_id):
+        for player in self.players:
+            if player.is_player(session_id):
+                return player
+        return None
+
+    # check if a character is available
+    def is_char_avail(self, character):
+        # iterate over all players and check if they are using the character
+        for player in self.players:
+            if player.character == character:
+                return False
+        return True
+
+    # set a character
+    def set_character(self, session_id, character):
+        # try to get a player by session id
+        player = self.get_player(session_id)
+
+        # check if the player exists or if the character is available
+        if player == None or not self.is_char_avail(character):
+            return False
+
+        # set character
+        player.set_character(session_id, character)
+        return True
+
+    # ends the game
+    def end_game(self, session_id):
+        if self.get_player(session_id):
+            self.game_status = GameStatus.OVER
+
+    # accuse a player
+    def accuse(self, session_id, character, weapon, room):
+        player = self.get_player(session_id)
+        if player == None:
+            # HANDLE THIS
+            pass
+
+        # create the event for the accusation
+        self.create_event(
+            EventType.ACCUSE, session_id, None, character, room, weapon, None
+        )
+
+        # check if the guess was correct
+        if sum([c.contains_clue(character, room, weapon) for c in self.deck]) == 3:
+            self.create_event(EventType.WIN, session_id, None, None, None, None, None)
+            self.end_game(session_id)
+            return True
+        else:
+            self.create_event(EventType.LOSE, session_id, None, None, None, None, None)
+            player.is_out = True
+            return False
+
+    # create an event
+    def create_event(
+        self, event_type, player1_id, player2_id, character, location, weapon, card
+    ):
+        event = Event(event_type, "", "")
+        player1 = self.get_player(player1_id)
+        player2 = self.get_player(player2_id)
+
+        # create event for a player winning
+        if event_type == EventType.WIN:
+            event.public_response = "{player} has won the game as {character}".format(
+                player1.name, player1.character
+            )
+
+        # create event for a player losing
+        elif event_type == EventType.LOSE:
+            event.public_response = (
+                "{player}'s accusation was false and is now out!".format(player1.name)
+            )
+
+        # event for a player moving
+        elif event_type == EventType.MOVE:
+            event.public_response = "{character} has moved to the {room}".format(
+                character, location
+            )
+
+        # event for an accusation
+        elif event_type == EventType.ACCUSE:
+            event.public_response = "{player} has accused {character} of murder with the {weapon} in the {room}".format(
+                player1.character,
+                character,
+                weapon,
+                location,
+            )
+
+        # event for a suggestion
+        elif event_type == EventType.SUGGEST:
+            event.public_response = "{player} has suggested {character} commited murder with the {weapon} in the {room}".format(
+                player1.character, character, weapon, location
+            )
+
+        # event for game start
+        elif event_type == EventType.START:
+            event.public_response = "The game has started!"
+
+        # event for player added
+        elif event_type == EventType.PLAYER_ADDED:
+            event.public_response = (
+                "{player} has joined the game as {character}".format(
+                    player1.name, character
+                )
+            )
+
+        # event for showing a card
+        elif event_type == EventType.SHOW:
+            event.public_response = "{player2} has shown {player1} a card".format(
+                player2.character, player1.character
+            )
+            event.private_response = (
+                "{player2} has shown {player1} they they hold the {card} card".format(
+                    player2.character, player1.character, card
+                )
+            )
+            event.private_IDs.append(player1.session_id)
+            event.private_IDs.append(player2.session_id)
+
+        # event for a turn being made
+        elif event_type == EventType.TURN:
+            event.private_response = "{player} has finished their turn".format(
+                player1.name
+            )
+
+        # event for a player being ready
+        elif event_type == EventType.READY:
+            event.private_response = "{player} is ready".format(player1.name)
+
+        self.event_log.append(event)
+
+        return True
 
     def move_player(self, player, location):
         pass
 
     def make_suggestion(self, player, suggestion):
-        response = "The player suggested {} used the {} in the {} to commit the crime".format(suggestion['char'], suggestion['weapon'], suggestion['loc'])
+        response = (
+            "The player suggested {} used the {} in the {} to commit the crime".format(
+                suggestion["char"], suggestion["weapon"], suggestion["loc"]
+            )
+        )
         print("FROM GAME SUBSYSTEM: " + response)
         return response
-
-    def make_accusation(self, player, suggestion):
-        response = "The player accused {} of using the {} in the {} to commit the crime".format(suggestion['char'], suggestion['weapon'], suggestion['loc'])
-        print("FROM GAME SUBSYSTEM: " + response)
-        return response
-
-    def end_game(self):
-        pass
 
     # will take in user input, process it, and then update game state accordingly
     def process_input(self, input):
