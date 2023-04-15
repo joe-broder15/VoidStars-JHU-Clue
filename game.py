@@ -23,7 +23,7 @@ class Game:
         self.game_turn = 0
         self.game_status = 0
         self.game_board = None
-        self.deck = set()
+        self.deck = []
         self.event_log = []
         self.demo = 0  # state to be set by a user during the demo
 
