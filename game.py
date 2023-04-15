@@ -35,13 +35,13 @@ class Game:
 
         # make deck
         for i in WEAPON_CARDS:
-            self.deck.append(Card(i), "weapon")
+            self.deck.append(Card(i, "weapon"))
 
         for i in ROOM_CARDS:
-            self.deck.append(Card(i), "room")
+            self.deck.append(Card(i, "room"))
 
         for i in CHARACTERS:
-            self.deck.append(Card(i), "character")
+            self.deck.append(Card(i, "character"))
 
         # get answer cards
         tmp = []
