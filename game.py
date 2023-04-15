@@ -38,7 +38,19 @@ class GameEngine:
         return "".join(random.choice(letters) for i in range(16))
 
     def get_state(self):
-        return "this will eventually be some state", self.demo
+        player_states = []
+        for player in self.players:
+            player_states.append((player.get_state()))
+
+        deck_states = []
+        for card in self.deck:
+            deck_states.append(card.get_state())
+
+        game_state = [player_states,
+                      deck_states,
+                      self.game_board.get_state()]
+
+        return game_state
 
     # create a new player and generate a session id
     def add_player(self, username):
@@ -196,32 +208,28 @@ class GameEngine:
     def move_player(self, player, location):
         self.game_board.move_player(self, player, location)
 
-    def make_suggestion(self, character, weapon, room):
-        if self.can_suggest(character, weapon, room):
-            response = (
-                "The player suggested {} used the {} in the {} to commit the crime".format(
-                    character, weapon, room
-                )
-            )
-        print("FROM GAME SUBSYSTEM: " + response)
+    def make_suggestion(self, session_id_accuser, session_id_accused, character, weapon, room, card):
+        accuser = session_id_accuser
+        accused = session_id_accused
 
-        #TODO: accept logic from get_state so player can choose which to reveal if multiple present
+        if self.can_suggest(self.get_player(accuser), weapon, room):
+            self.create_event(self, EventType.SUGGEST, accuser,
+                              accused, room, weapon)
+
         for player in self.players:
             if character in player.cards:
-                self.create_event.private_response = "{player} reveals {character}!".format(player, character)
+                self.create_event(self, EventType.SHOW, accuser,
+                                  accused, None, None, None, card)
                 break
             if weapon in player.cards:
-                self.create_event.private_response = "{player} reveals {weapon}!".format(player, weapon)
+                self.create_event(self, EventType.SHOW, accuser,
+                                  accused, None, None, None, card)
                 break
             if room in player.cards:
-                self.create_event.private_response = "{player} reveals {room}!".format(player, room)
+                self.create_event(self, EventType.SHOW, accuser,
+                                  accused, None, None, None, card)
                 break
 
-        #TODO: accept logic from get_state so player can choose to accuse or end turn
-        #accuse
-
-
-        return response
 
     def can_suggest(self, character, weapon, room):
         if self.game_board.get_player_room(character) != room:
