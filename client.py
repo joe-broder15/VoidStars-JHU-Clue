@@ -1,6 +1,7 @@
 import time
 import requests
 import copy
+import json
 
 character = ""
 session_id = ""
@@ -169,7 +170,12 @@ def suggestionPhase(loc, char="unentered"):
         print("That was not a valid weapon")
         suggestionPhase(loc, char)
     resp = requests.post(SERVER_ADDRESS + "make_suggestion", json={'session_id': session_id, 'location': loc, 'character': char, 'weapon': weapon})
-    card = resp.json()['card']
+    try:
+        card = resp.json()['card']
+    except json.JSONDecodeError:
+        #TODO: FIX THIS
+        print(f"Error: Unable to decode JSON response. Response text: {resp.text}")
+        pass
     if not card == "None":
         print("You were shown the {} card".format(card))
     else:
