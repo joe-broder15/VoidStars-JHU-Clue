@@ -120,7 +120,6 @@ def movementPhase():
         return movementPhase()
     move_location = move_options[int(input) - 1]
     move_enum = move_options[int(input) - 1]
-    move_enum = move_enum.replace("Room", "")
     move_enum = move_enum.replace(" ", "_")
     resp = requests.post(SERVER_ADDRESS + "move_player", json={'session_id': session_id, 'location': move_enum.upper()})
     return move_location

@@ -24,13 +24,13 @@ class RoomEnum(Enum):
     HALLWAY_STUDY_HALL = (11, "Hallway Study Hall", RoomType.HALLWAY, [])
     HALLWAY_HALL_LOUNGE = (12, "Hallway Hall Lounge", RoomType.HALLWAY, [])
     HALLWAY_STUDY_LIBRARY = (13, "Hallway Study Library", RoomType.HALLWAY, [])
-    HALLWAY_HALL_BILLIARD = (14, "Hallway Hall Billiard Room", RoomType.HALLWAY, [])
-    HALLWAY_LOUNGE_DINING = (15, "Hallway Lounge Dining Room", RoomType.HALLWAY, [])
-    HALLWAY_LIBRARY_BILLIARD = (16, "Hallway Library Billiard Room", RoomType.HALLWAY, [])
-    HALLWAY_BILLIARD_DINING = (17, "Hallway Billiard Room Dining Room", RoomType.HALLWAY, [])
+    HALLWAY_HALL_BILLIARD_ROOM = (14, "Hallway Hall Billiard Room", RoomType.HALLWAY, [])
+    HALLWAY_LOUNGE_DINING_ROOM = (15, "Hallway Lounge Dining Room", RoomType.HALLWAY, [])
+    HALLWAY_LIBRARY_BILLIARD_ROOM = (16, "Hallway Library Billiard Room", RoomType.HALLWAY, [])
+    HALLWAY_BILLIARD_ROOM_DINING_ROOM = (17, "Hallway Billiard Room Dining Room", RoomType.HALLWAY, [])
     HALLWAY_LIBRARY_CONSERVATORY = (18, "Hallway Library Conservatory", RoomType.HALLWAY, [])
-    HALLWAY_BILLIARD_BALLROOM = (19, "Hallway Billiard Room Ballroom", RoomType.HALLWAY, [])
-    HALLWAY_DINING_KITCHEN = (20, "Hallway Dining Room Kitchen", RoomType.HALLWAY, [])
+    HALLWAY_BILLIARD_ROOM_BALLROOM = (19, "Hallway Billiard Room Ballroom", RoomType.HALLWAY, [])
+    HALLWAY_DINING_ROOM_KITCHEN = (20, "Hallway Dining Room Kitchen", RoomType.HALLWAY, [])
     HALLWAY_CONSERVATORY_BALLROOM = (21, "Hallway Conservatory Ballroom", RoomType.HALLWAY, [])
     HALLWAY_BALLROOM_KITCHEN = (22, "Hallway Ballroom Kitchen", RoomType.HALLWAY, [])
 
@@ -60,9 +60,9 @@ class Board:
     def start_board(self, character_names=None):
         self.grid_default = [
             [RoomEnum.STUDY, RoomEnum.HALLWAY_STUDY_HALL, RoomEnum.HALL, RoomEnum.HALLWAY_HALL_LOUNGE, RoomEnum.LOUNGE],
-            [RoomEnum.HALLWAY_STUDY_LIBRARY, RoomEnum.WALL, RoomEnum.HALLWAY_HALL_BILLIARD, RoomEnum.WALL, RoomEnum.HALLWAY_LOUNGE_DINING],
-            [RoomEnum.LIBRARY, RoomEnum.HALLWAY_LIBRARY_BILLIARD, RoomEnum.BILLIARD_ROOM, RoomEnum.HALLWAY_BILLIARD_DINING, RoomEnum.DINING_ROOM],
-            [RoomEnum.HALLWAY_LIBRARY_CONSERVATORY, RoomEnum.WALL, RoomEnum.HALLWAY_BILLIARD_BALLROOM, RoomEnum.WALL, RoomEnum.HALLWAY_DINING_KITCHEN],
+            [RoomEnum.HALLWAY_STUDY_LIBRARY, RoomEnum.WALL, RoomEnum.HALLWAY_HALL_BILLIARD_ROOM, RoomEnum.WALL, RoomEnum.HALLWAY_LOUNGE_DINING_ROOM],
+            [RoomEnum.LIBRARY, RoomEnum.HALLWAY_LIBRARY_BILLIARD_ROOM, RoomEnum.BILLIARD_ROOM, RoomEnum.HALLWAY_BILLIARD_ROOM_DINING_ROOM, RoomEnum.DINING_ROOM],
+            [RoomEnum.HALLWAY_LIBRARY_CONSERVATORY, RoomEnum.WALL, RoomEnum.HALLWAY_BILLIARD_ROOM_BALLROOM, RoomEnum.WALL, RoomEnum.HALLWAY_DINING_ROOM_KITCHEN],
             [RoomEnum.CONSERVATORY, RoomEnum.HALLWAY_CONSERVATORY_BALLROOM, RoomEnum.BALLROOM, RoomEnum.HALLWAY_BALLROOM_KITCHEN, RoomEnum.KITCHEN],
         ]
 
