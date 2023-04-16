@@ -120,7 +120,7 @@ def movementPhase():
         return movementPhase()
     move_location = move_options[int(input) - 1]
     move_enum = move_options[int(input) - 1]
-    move_enum.replace(" ", "_")
+    move_enum = move_enum.replace(" ", "_")
     resp = requests.post(SERVER_ADDRESS + "move_player", json={'session_id': session_id, 'location': move_enum.upper()})
     return move_location
 
@@ -202,6 +202,7 @@ def printEvents(events):
             if event != last_event_displayed:
                 event_copy.pop(0)
             else:
+                event_copy.pop(0)
                 break
     else:
         print("EVENTS: ")
@@ -267,7 +268,6 @@ def startGame():
     input = getInput(False)
     if input == "1":
         start_response = requests.post(SERVER_ADDRESS + "start_game", json={'session_id': session_id})
-        print(start_response)
 
 
 def doGame():

@@ -324,7 +324,8 @@ class Game:
                     == RoomType.NORMAL
                 ):
                     self.get_player(session_id).can_suggest = True
-
+                else:
+                    self.get_player(session_id).can_suggest = False
                 self.create_event(
                     EventType.MOVE, character=player.character, location=location
                 )
@@ -345,6 +346,7 @@ class Game:
         accuser_character = session_id_accuser
 
         if self.can_suggest(session_id_accuser):
+            self.get_player(accuser_character).can_suggest = False
             # Create SUGGEST event
             self.create_event(EventType.SUGGEST, session_id_accuser, character=character, location=room, weapon=weapon)
 
@@ -352,10 +354,11 @@ class Game:
             # the character is on the board
             all_characters = [player.character for player in self.players]
             location = room
-            location.replace(" ", "_")
+            location = location.replace(" ", "_").upper()
+            print(location)
             if character in all_characters:
                 self.create_event(EventType.MOVE, None, None, character, room, None, None)
-                self.game_board.teleport_player(character, room.upper())
+                self.game_board.teleport_player(character, location)
                 for char_player in self.players:
                     if char_player.character == character:
                         char_player.can_suggest = True
@@ -378,7 +381,6 @@ class Game:
                         shown_card = room
 
                     if shown_card is not None:
-                        self.get_player(accuser_character).can_suggest = False
                         self.create_event(
                             EventType.SHOW,
                             accuser_character,
@@ -395,7 +397,7 @@ class Game:
         player = self.get_player(session_id)
         if player is None:
             # HANDLE THIS
-            pass
+            return False
         return player.get_can_suggest()
 
     # will take in user input, process it, and then update game state accordingly
