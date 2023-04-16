@@ -14,7 +14,7 @@ class Player:
         self.name = name
         self.cards = set()
         self.character = character
-        self.can_suggest = True
+        self.can_suggest = False
         self.is_out = False
 
     # validate a session id

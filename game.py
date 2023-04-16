@@ -21,7 +21,7 @@ class Game:
         self.players = []
         self.winner = None
         self.game_turn = 0
-        self.game_status = 0
+        self.game_status = GameStatus.WAITING
         self.game_board = None
         self.deck = []
         self.event_log = []
@@ -34,7 +34,7 @@ class Game:
         return "".join(random.choice(letters) for i in range(16))
 
     def start_game(self):
-        # self.game_status = GameStatus.START
+        self.game_status = GameStatus.START
 
         # make deck
         for i in WEAPON_CARDS:
@@ -51,18 +51,24 @@ class Game:
         random.shuffle(self.deck)
         for c in self.deck:
             if c.type == "weapon":
+                print(c.name)
                 tmp.append(c)
                 self.deck.remove(c)
+                break
 
         for c in self.deck:
             if c.type == "room":
+                print(c.name)
                 tmp.append(c)
                 self.deck.remove(c)
+                break
 
         for c in self.deck:
             if c.type == "character":
+                print(c.name)
                 tmp.append(c)
                 self.deck.remove(c)
+                break
 
         # deal cards to players
         p = 0
@@ -72,7 +78,6 @@ class Game:
 
         # reset deck to the held out cards
         self.deck = tmp
-
         # start board
         self.game_board = Board()
         self.game_board.start_board([p.character for p in self.players])
@@ -83,18 +88,38 @@ class Game:
         return
 
     def get_state(self, session_id):
+
+        if self.game_status == GameStatus.WAITING:
+            player_states = [p.get_state(session_id) for p in self.players]
+            event_states = [e.get_state(session_id) for e in self.event_log]
+
+            game_state = {
+                "players": player_states,
+                "events": event_states,
+                "board": None,
+                "status": str(self.game_status),
+                "turn": 0,
+                "turn_character": None,
+                "winner": self.winner,
+            }
+            return game_state
+
         player_states = [p.get_state(session_id) for p in self.players]
         event_states = [e.get_state(session_id) for e in self.event_log]
 
+        win_name = None
+        if not self.winner is None:
+            win_name = self.winner.name
         game_state = {
             "players": player_states,
             "events": event_states,
             "board": self.game_board.get_state(),
-            "status": self.game_status,
+            "status": str(self.game_status),
             "turn": self.game_turn,
             "turn_character": self.players[self.game_turn].character,
-            "winner": self.winner,
+            "winner": win_name,
         }
+        print(event_states)
 
         return game_state
 
@@ -164,10 +189,22 @@ class Game:
         if sum([c.contains_clue(character, room, weapon) for c in self.deck]) == 3:
             self.create_event(EventType.WIN, session_id, None, None, None, None, None)
             self.end_game(session_id)
+            self.winner = player
             return True
         else:
             self.create_event(EventType.LOSE, session_id, None, None, None, None, None)
             player.is_out = True
+            count = 0
+            player_in = None
+            for in_player in self.players:
+                if not in_player.is_out:
+                    count += 1
+                    player_in = in_player
+                if count > 1:
+                    return False
+            if count == 1:
+                self.create_event(EventType.WIN, player_in.player_session_id, None, None, None, None, None)
+                self.end_game(player_in.player_session_id)
             return False
 
     # create an event
@@ -187,35 +224,35 @@ class Game:
 
         # create event for a player winning
         if event_type == EventType.WIN:
-            event.public_response = "{player} has won the game as {character}".format(
+            event.public_response = "{} has won the game as {}".format(
                 player1.name, player1.character
             )
 
         # create event for a player losing
         elif event_type == EventType.LOSE:
             event.public_response = (
-                "{player}'s accusation was false and is now out!".format(player1.name)
+                "{}'s accusation was false and is now out!".format(player1.name)
             )
 
         # event for a player moving
         elif event_type == EventType.MOVE:
-            event.public_response = "{character} has moved to the {room}".format(
+            event.public_response = "{} has moved to the {}".format(
                 character, location
             )
 
         # event for an accusation
         elif event_type == EventType.ACCUSE:
             event.public_response = "{player} has accused {character} of murder with the {weapon} in the {room}".format(
-                player1.character,
-                character,
-                weapon,
-                location,
+                player=player1.name,
+                character=character,
+                weapon=weapon,
+                room=location,
             )
 
         # event for a suggestion
         elif event_type == EventType.SUGGEST:
             event.public_response = "{player} has suggested {character} commited murder with the {weapon} in the {room}".format(
-                player1.character, character, weapon, location
+                player=player1.name, character=character, weapon=weapon, room=location
             )
 
         # event for game start
@@ -225,33 +262,36 @@ class Game:
         # event for player added
         elif event_type == EventType.PLAYER_ADDED:
             event.public_response = (
-                "{player} has joined the game as {character}".format(
+                "{} has joined the game as {}".format(
                     player1.name, character
                 )
             )
 
         # event for showing a card
         elif event_type == EventType.SHOW:
-            event.public_response = "{player2} has shown {player1} a card".format(
+            event.public_response = "{} has shown {} a card".format(
                 player2.character, player1.character
             )
             event.private_response = (
-                "{player2} has shown {player1} they they hold the {card} card".format(
-                    player2.character, player1.character, card
+                "{} has shown {} they they hold the {} card".format(
+                    player2.name, player1.name, card
                 )
             )
-            event.private_IDs.append(player1.session_id)
-            event.private_IDs.append(player2.session_id)
+            event.private_IDs.append(player1.player_session_id)
+            event.private_IDs.append(player2.player_session_id)
 
         # event for a turn being made
         elif event_type == EventType.TURN:
-            event.private_response = "{player} has finished their turn".format(
+            event.public_response = "{} has finished their turn".format(
                 player1.name
             )
 
         # event for a player being ready
         elif event_type == EventType.READY:
-            event.private_response = "{player} is ready".format(player1.name)
+            event.public_response = "{} is ready".format(player1.name)
+
+        elif event_type == EventType.STAY:
+            event.public_response = "{} has stayed in the {}".format(character, location)
 
         self.event_log.append(event)
 
@@ -260,6 +300,8 @@ class Game:
     def end_turn(self, session_id):
         if self.get_player(session_id):
             self.game_turn = (self.game_turn + 1) % len(self.players)
+            while self.players[self.game_turn].is_out:
+                self.game_turn = (self.game_turn + 1) % len(self.players)
             self.create_event(EventType.TURN, session_id)
             return True
 
@@ -267,8 +309,11 @@ class Game:
     def move_player(self, session_id, location):
         player = self.get_player(session_id)
         if player:
+            if location == "STAY":
+                self.create_event(EventType.STAY, character=player.character, location=location)
+                return True
             ret = self.game_board.move_player(player.character, location)
-            pos = self.game_board.get_room_position(location)
+            pos = self.game_board.get_room_name_position(location)
             if ret:
                 if (
                     self.game_board.get_room_type(pos[0], pos[1])
@@ -285,30 +330,39 @@ class Game:
 
     def get_available_moves(self, session_id):
         player = self.get_player(session_id)
-        return self.game_board.get_valid_moves(player.character)
+        moves = self.game_board.get_valid_moves(player.character)
+        if player.can_suggest:
+            moves.append("Stay")
+        return moves
 
     def make_suggestion(
-        self, session_id_accuser, accused_character, character, weapon, room, card
+        self, session_id_accuser, character, weapon, room
     ):
         accuser_character = session_id_accuser
 
-        if self.can_suggest(self.get_player(accuser_character), weapon, room):
+        if self.can_suggest(session_id_accuser):
             # Create SUGGEST event
-            self.create_event(self, EventType.SUGGEST, session_id_accuser, accused_character, room, weapon)
+            self.create_event(EventType.SUGGEST, session_id_accuser, character=character, location=room, weapon=weapon)
 
             # Move accused character to accuser's room if
             # the character is on the board
-            all_characters = [player.name for player in self.players]
-            if accused_character in all_characters:
-                accuser_room = self.game_board.get_player_room(accuser_character)
-                self.create_event(self, EventType.MOVE, None, None, accused_character, accuser_room, None, None)
-                self.game_board.teleport_player(accused_character, accuser_room)
+            all_characters = [player.character for player in self.players]
+            location = room
+            location.replace(" ", "_")
+            if character in all_characters:
+                self.create_event(EventType.MOVE, None, None, character, room, None, None)
+                self.game_board.teleport_player(character, room.upper())
+                for char_player in self.players:
+                    if char_player.character == character:
+                        char_player.can_suggest = True
+
+
 
             # For each other player, go through their cards and see if there's
             # a match with those in the suggestion
             # TODO: go through characters in clockwise order
             for player in self.players:
-                if player == accuser_character:
+                if player.player_session_id == accuser_character:
                     continue
                 else:
                     shown_card = None
@@ -320,17 +374,18 @@ class Game:
                         shown_card = room
 
                     if shown_card is not None:
+                        self.get_player(accuser_character).can_suggest = False
                         self.create_event(
-                            self,
                             EventType.SHOW,
                             accuser_character,
-                            accused_character,
+                            player.player_session_id,
                             None,
                             None,
                             None,
                             shown_card,
                         )
-                        break
+                        return shown_card
+            return None
 
     def can_suggest(self, session_id):
         player = self.get_player(session_id)

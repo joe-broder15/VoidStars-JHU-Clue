@@ -13,6 +13,7 @@ EventType = Enum(
         "SHOW",
         "TURN",
         "READY",
+        "STAY",
     ],
 )
 

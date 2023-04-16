@@ -24,4 +24,4 @@ class Card:
 
     # check whether the card is any of the provided arguments
     def contains_clue(self, character, location, weapon):
-        return self.name in [character, location, weapon]
+        return self.name in [character, location.lower(), weapon.lower()]

@@ -91,7 +91,13 @@ class Server:
             return jsonify({'status': 'Failed, bad session id'})
 
     def make_suggestion(self):
-        pass
+        data = request.get_json()
+        player_id = data["session_id"]
+        card = self.game.make_suggestion(player_id, data["character"], data["weapon"], data["location"])
+        if card is None:
+            return jsonify({'card': 'None'})
+        else:
+            return jsonify({'card': card})
 
     def can_suggest(self):
         data = request.get_json()
