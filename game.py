@@ -316,6 +316,8 @@ class Game:
             if location == "STAY":
                 self.create_event(EventType.STAY, character=player.character, location=location)
                 return True
+            if " " in location:
+                location = location.replace(" ", "_")
             ret = self.game_board.move_player(player.character, location)
             pos = self.game_board.get_room_name_position(location)
             if ret:
