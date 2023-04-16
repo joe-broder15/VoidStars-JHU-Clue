@@ -32,7 +32,7 @@ def makeAccusation(char="unentered", weapon="unentered"):
     loc = ""
     if char == "unentered":
         print("Who do you think did it?")
-        printMenu(["Mrs. Peacock", "Colonel Mustard", "Reverend Green", "Professor Plum", "Miss Scarlet", "Mrs. White"])
+        printMenu(["Mrs. Peacock", "Colonel Mustard", "Mr. Green", "Professor Plum", "Miss Scarlet", "Mrs. White"])
         input = getInput()
         if input == "accuse":
             return 0
@@ -53,7 +53,7 @@ def makeAccusation(char="unentered", weapon="unentered"):
             makeAccusation()
     if weapon == "unentered":
         print("What weapon do you think they used?")
-        printMenu(["Revolver", "Dagger", "Pipe", "Rope", "Candlestick", "Wrench"])
+        printMenu(["Revolver", "Knife", "Lead Pipe", "Rope", "Candlestick", "Wrench"])
         input = getInput()
         if input == "accuse":
             return 0
@@ -104,7 +104,6 @@ def makeAccusation(char="unentered", weapon="unentered"):
 
 
 def movementPhase():
-    #TODO get movement options
     resp = requests.get(SERVER_ADDRESS + "get_available_moves", json={'session_id': session_id})
     move_options = resp.json()['availableMoves']
     if len(move_options) == 0:
@@ -130,7 +129,7 @@ def suggestionPhase(loc, char="unentered"):
     weapon = ""
     if char == "unentered":
         print("Who do you think did it?")
-        printMenu(["Mrs. Peacock", "Colonel Mustard", "Reverend Green", "Professor Plum", "Miss Scarlet", "Mrs. White"])
+        printMenu(["Mrs. Peacock", "Colonel Mustard", "Mr. Green", "Professor Plum", "Miss Scarlet", "Mrs. White"])
         input = getInput(True)
         if input == "accuse":
             return 0
@@ -150,7 +149,7 @@ def suggestionPhase(loc, char="unentered"):
             print("That was not a valid character")
             suggestionPhase(loc)
     print("What weapon do you think they used?")
-    printMenu(["Revolver", "Dagger", "Pipe", "Rope", "Candlestick", "Wrench"])
+    printMenu(["Revolver", "Knife", "Lead Pipe", "Rope", "Candlestick", "Wrench"])
     input = getInput(True)
     if input == "accuse":
         return 0
@@ -294,7 +293,6 @@ def doGame():
         last_event_displayed = state['events'][-1:][0]
 
         if state['status'] == "GameStatus.OVER":
-            print("The game is over")
             return
         time.sleep(1)
         if state['turn_character'] == character:

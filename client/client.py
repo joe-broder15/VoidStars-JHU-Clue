@@ -24,7 +24,6 @@ def getInput(allowAccus=False):
     inp = input("Please enter the number for the action you want to do\n")
     if allowAccus and inp.lower() == "accuse":
         makeAccusation()
-        #TODO do accusation
         return "accuse"
     return inp
 
@@ -101,12 +100,10 @@ def makeAccusation(char="unentered", weapon="unentered"):
         print("That was not a valid location")
         makeAccusation(char, weapon)
 
-    #TODO make accusation to server
     requests.post(SERVER_ADDRESS + "make_accusation", json={'session_id':session_id, 'room': loc, 'character': char, 'weapon': weapon})
 
 
 def movementPhase():
-    #TODO get movement options
     resp = requests.get(SERVER_ADDRESS + "get_available_moves", json={'session_id': session_id})
     move_options = resp.json()['availableMoves']
     if len(move_options) == 0:
@@ -125,7 +122,6 @@ def movementPhase():
     move_enum = move_options[int(input) - 1]
     move_enum.replace(" ", "_")
     resp = requests.post(SERVER_ADDRESS + "move_player", json={'session_id': session_id, 'location': move_enum.upper()})
-    print(resp)
     return move_location
 
 
@@ -209,7 +205,6 @@ def printEvents(events):
                 break
     else:
         print("EVENTS: ")
-    print(event_copy)
     for event2 in event_copy:
         print(event2["response"])
 
