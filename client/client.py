@@ -121,7 +121,10 @@ def movementPhase():
     move_location = move_options[int(input) - 1]
     move_enum = move_options[int(input) - 1]
     move_enum = move_enum.replace(" ", "_")
+    print(move_enum)
     resp = requests.post(SERVER_ADDRESS + "move_player", json={'session_id': session_id, 'location': move_enum.upper()})
+    if move_enum.upper() == "STAY":
+        return current_room
     return move_location
 
 
