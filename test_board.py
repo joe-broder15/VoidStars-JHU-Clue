@@ -19,6 +19,10 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(self.board.get_player_room("Miss Scarlett"), "HALLWAY_STUDY_LIBRARY")
         print(f"Move Miss Scarlett to RoomEnum.STUDY")
 
+        print("--------")
+        print(self.board.get_ascii_board())
+        print("--------")
+
         self.board.move_player("Miss Scarlett", "STUDY")
         print(f"Assert Miss Scarlett is in HALLWAY_STUDY")
 
@@ -30,6 +34,9 @@ class TestBoard(unittest.TestCase):
 
         print("Miss Scarlett's valid moves are ", self.board.get_valid_moves("Miss Scarlett"))
         print(self.board.get_state())
+        print("--------")
+        print(self.board.get_ascii_board())
+        print("--------")
 
 if __name__ == '__main__':
     unittest.main()

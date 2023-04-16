@@ -51,6 +51,12 @@ class Board:
         self.grid = []
         self.old_room_types = {}
 
+    @property
+    def board_size(self):
+        if self.grid_default is None:
+            return None
+        return len(self.grid_default), len(self.grid_default[0])
+
     def start_board(self, character_names=None):
         self.grid_default = [
             [RoomEnum.STUDY, RoomEnum.HALLWAY_STUDY_HALL, RoomEnum.HALL, RoomEnum.HALLWAY_HALL_LOUNGE, RoomEnum.LOUNGE],
@@ -82,6 +88,38 @@ class Board:
                 self.character_positions[character_name] = (row, col)
 
         print(f"Started a board with {character_names}")
+
+    def grid_representation(self):
+        board_representation = []
+
+        for row in range(self.board_size[0]):
+            row_representation = []
+            for col in range(self.board_size[1]):
+                room = self.grid[row][col]
+                room_name = room.name
+
+                if "hallway" in room_name.lower():
+                    room_name = "Hallway"
+
+                if room.characters:
+                    player_initials = ''.join([character[0].upper() for character in room.characters])
+                    row_representation.append(f"{room_name} ({player_initials})")
+                else:
+                    row_representation.append(room_name)
+            board_representation.append(row_representation)
+
+        return board_representation
+
+    def get_ascii_board(self):
+        grid = self.grid_representation()
+        display_string = ""
+
+        for row in grid:
+            for room in row:
+                display_string += f"{room:^20}|"
+            display_string = display_string.rstrip("|") + "\n"
+
+        return display_string
 
     def check_valid_move(self, character, new_row, new_col):
         # Check if the move is adjacent to the current position
