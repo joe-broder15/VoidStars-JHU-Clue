@@ -1,7 +1,6 @@
 import time
 import requests
 import copy
-import json
 
 character = ""
 session_id = ""
@@ -121,6 +120,7 @@ def movementPhase():
         return movementPhase()
     move_location = move_options[int(input) - 1]
     move_enum = move_options[int(input) - 1]
+    move_enum = move_enum.replace("Room", "")
     move_enum = move_enum.replace(" ", "_")
     resp = requests.post(SERVER_ADDRESS + "move_player", json={'session_id': session_id, 'location': move_enum.upper()})
     return move_location
@@ -170,12 +170,7 @@ def suggestionPhase(loc, char="unentered"):
         print("That was not a valid weapon")
         suggestionPhase(loc, char)
     resp = requests.post(SERVER_ADDRESS + "make_suggestion", json={'session_id': session_id, 'location': loc, 'character': char, 'weapon': weapon})
-    try:
-        card = resp.json()['card']
-    except json.JSONDecodeError:
-        #TODO: FIX THIS
-        print(f"Error: Unable to decode JSON response. Response text: {resp.text}")
-        pass
+    card = resp.json()['card']
     if not card == "None":
         print("You were shown the {} card".format(card))
     else:
@@ -217,7 +212,7 @@ def printEvents(events):
 
 def doTurn():
     #TODO do turn
-    print("\n\nIt is your turn")
+    print("It is your turn")
     print("In your hand you have these cards: ")
     cardString = ""
     for card in cards:

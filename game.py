@@ -354,6 +354,7 @@ class Game:
             # the character is on the board
             all_characters = [player.character for player in self.players]
             location = room
+            location = location.replace("Room", "")
             location = location.replace(" ", "_").upper()
             print(location)
             if character in all_characters:
