@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from game import Game
 import uuid
 from threading import Thread
@@ -12,6 +12,7 @@ class Server:
         self.app.add_url_rule('/api/join_game', 'join_game', self.join_game, methods=['POST'])
         self.app.add_url_rule('/api/get_game_state', 'get_game_state', self.get_game_state, methods=['GET'])
         self.app.add_url_rule('/api/get_available_moves', 'get_available_moves', self.get_available_moves, methods=['GET'])
+        self.app.add_url_rule('/api/get_ascii_board', 'get_ascii_board', self.get_ascii_board, methods=['GET'])
         self.app.add_url_rule('/api/make_suggestion', 'make_suggestion', self.make_suggestion, methods=['POST'])
         self.app.add_url_rule('/api/make_accusation', 'make_accusation', self.make_accusation, methods=['POST'])
         self.app.add_url_rule('/api/can_suggest', 'can_suggest', self.can_suggest, methods=['GET'])
@@ -89,6 +90,10 @@ class Server:
             return jsonify({"status": "success", "state":self.game.get_state(player_id)})
         else:
             return jsonify({'status': 'Failed, bad session id'})
+
+    def get_ascii_board(self):
+        ascii_board = self.game.get_ascii_board()
+        return Response(ascii_board(), content_type="text/plain; charset=utf-8")
 
     def make_suggestion(self):
         data = request.get_json()

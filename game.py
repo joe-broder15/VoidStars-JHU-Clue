@@ -123,6 +123,10 @@ class Game:
 
         return game_state
 
+    def get_ascii_board(self):
+        ascii_board = self.game_board.get_ascii_board
+        return ascii_board
+
     # create a new player and generate a session id
     def add_player(self, username):
         # generate a session id

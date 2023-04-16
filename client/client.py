@@ -191,8 +191,8 @@ def printRow():
 
 
 def printBoard():
-    print("BOARD")
-    #TODO print board
+    resp = requests.get(SERVER_ADDRESS + "get_ascii_board")
+    print(resp.text)
 
 
 def printEvents(events):

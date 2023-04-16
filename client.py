@@ -191,8 +191,8 @@ def printRow():
 
 
 def printBoard():
-    print("BOARD")
-    #TODO print board
+    resp = requests.get(SERVER_ADDRESS + "get_ascii_board")
+    print(resp.text)
 
 
 def printEvents(events):
@@ -210,7 +210,7 @@ def printEvents(events):
 
 def doTurn():
     #TODO do turn
-    print("It is your turn")
+    print("\n\nIt is your turn")
     print("In your hand you have these cards: ")
     cardString = ""
     for card in cards:
