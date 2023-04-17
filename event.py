@@ -33,6 +33,8 @@ class Event:
         resp = self.public_response
         if session_id in self.private_IDs:
             resp = self.private_response
+            if resp == "":
+                resp = self.public_response
 
         return {
             "event_ID": self.event_ID,
