@@ -273,16 +273,16 @@ class Game:
 
         # event for showing a card
         elif event_type == EventType.SHOW:
-            event.public_response = "{} has shown {} a card".format(
+            public_response = "{} has shown {} a card".format(
                 player2.character, player1.character
             )
-            event.private_response = (
-                "{} has shown {} they they hold the {} card".format(
+            private_response = (
+                "{} has shown {} they hold the {} card".format(
                     player2.name, player1.name, card
                 )
             )
-            event.private_IDs.append(player1.player_session_id)
-            event.private_IDs.append(player2.player_session_id)
+            private_ids = [player1.player_session_id, player2.player_session_id]
+            event = Event(event_type, public_response, private_response, private_ids)
 
         # event for a turn being made
         elif event_type == EventType.TURN:
