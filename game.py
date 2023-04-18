@@ -377,9 +377,9 @@ class Game:
                     shown_card = None
                     if character in [card.name for card in player.cards]:
                         shown_card = character
-                    elif weapon in [card.name for card in player.cards]:
+                    elif weapon.lower() in [card.name for card in player.cards]:
                         shown_card = weapon
-                    elif room in [card.name for card in player.cards]:
+                    elif room.lower() in [card.name for card in player.cards]:
                         shown_card = room
 
                     if shown_card is not None:
