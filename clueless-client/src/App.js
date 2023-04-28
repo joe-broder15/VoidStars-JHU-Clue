@@ -1,25 +1,34 @@
-import logo from './logo.svg';
 import './App.css';
+import Container from 'react-bootstrap/Container'
+import { useState } from 'react';
+import JoinGame from './components/JoinGame';
+import StartGame from './components/StartGame';
+import GameView from './components/GameView';
 
+/*
+The root of our application, it is where we log the user in and start the game
+
+*/
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [sessionId, setSessionId] = useState("");
+    const [gameStarted, setGameStarted] = useState(false);
+
+    // resolve the state of the game
+    var content;
+    if (sessionId == "") {
+        content = <JoinGame setGlobalId={(i) => { setSessionId(i) }} />;
+    } else if (!gameStarted) {
+        content = <StartGame sessionId={sessionId} setGameStarted={(i) => { setGameStarted(i) }} />;
+    } else {
+        content = <GameView sessionId={sessionId}/>;
+    }
+
+    // render screen
+    return (
+        <Container>
+            {content}
+        </Container>
+    );
 }
 
 export default App;
