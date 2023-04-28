@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 
 // component exists to hold control and display subcomponents
-function EndTurnButton({ sessionId, setCheckTurn, setIsTurn }) {
+function EndTurnButton({ sessionId, setCheckTurn, setIsTurn, setGameState, setLoading }) {
 
     function end_game() {
         axios.post('http://127.0.0.1:5742/api/end_turn',
@@ -11,9 +11,11 @@ function EndTurnButton({ sessionId, setCheckTurn, setIsTurn }) {
                 "session_id": sessionId
             })
             .then(response => {
-                setTimeout(function () {return}, 1000);
-                setCheckTurn(true);
-                setIsTurn(false);
+                // wait one second and then reset state
+                setCheckTurn();
+                setIsTurn();
+                setGameState();
+                setLoading();
             })
             .catch(error => {
                 console.error('Error creating post:', error);

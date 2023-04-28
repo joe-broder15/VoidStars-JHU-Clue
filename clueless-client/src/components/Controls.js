@@ -23,7 +23,7 @@ function Controls({ sessionId }) {
                     })
                     .then(response => {
                         setGameState(response.data.state);
-                        console.log(gameState);
+                        setLoading(false);
                         for (var i = 0; i < gameState.players.length; i++) {
                             if (gameState.players[i].session_id == sessionId && gameState.players[i].character == gameState.turn_character) {
                                 setIsTurn(true);
@@ -31,8 +31,6 @@ function Controls({ sessionId }) {
                                 return;
                             }
                         }
-                        setLoading(false);
-                        setCheckTurn(true);
                     })
                     .catch(error => {
                         console.error('Error creating post:', error);
@@ -59,7 +57,7 @@ function Controls({ sessionId }) {
 
                 </Row>
                 <Row>
-                    <EndTurnButton sessionId={sessionId} setCheckTurn={(t) => { setCheckTurn(t) }} setIsTurn={(t) => { setIsTurn(t) }} />
+                    <EndTurnButton sessionId={sessionId} setCheckTurn={()=>{setCheckTurn(true)}} setIsTurn={()=>{setIsTurn(false)}} setLoading={()=>{setLoading(true)}} setGameState={(t)=>{setGameState({})}}/>
                 </Row>
             </Card.Body>
         </Card>
