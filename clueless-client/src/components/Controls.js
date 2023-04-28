@@ -3,6 +3,7 @@ import Card from 'react-bootstrap/Card';
 import Row from 'react-bootstrap/Row';
 import axios from 'axios';
 import Spinner from 'react-bootstrap/esm/Spinner';
+import EndTurnButton from './EndTurnButton';
 
 // this component will determine whether it is the viewing player's turn or not and display subcomponents accordingly
 function Controls({ sessionId }) {
@@ -15,7 +16,7 @@ function Controls({ sessionId }) {
     useEffect(() => {
         // get the state and re-render every second
         setTimeout(function () {
-            if (setCheckTurn) {
+            if (checkTurn) {
                 axios.post('http://127.0.0.1:5742/api/get_game_state',
                     {
                         "session_id": sessionId
@@ -27,9 +28,11 @@ function Controls({ sessionId }) {
                             if (gameState.players[i].session_id == sessionId && gameState.players[i].character == gameState.turn_character) {
                                 setIsTurn(true);
                                 setCheckTurn(false);
+                                return;
                             }
                         }
                         setLoading(false);
+                        setCheckTurn(true);
                     })
                     .catch(error => {
                         console.error('Error creating post:', error);
@@ -56,7 +59,7 @@ function Controls({ sessionId }) {
 
                 </Row>
                 <Row>
-
+                    <EndTurnButton sessionId={sessionId} setCheckTurn={(t) => { setCheckTurn(t) }} setIsTurn={(t) => { setIsTurn(t) }} />
                 </Row>
             </Card.Body>
         </Card>
