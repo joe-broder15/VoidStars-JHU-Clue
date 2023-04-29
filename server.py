@@ -12,7 +12,7 @@ class Server:
         CORS(self.app)
         self.app.add_url_rule('/api/join_game', 'join_game', self.join_game, methods=['POST'])
         self.app.add_url_rule('/api/get_game_state', 'get_game_state', self.get_game_state, methods=['POST'])
-        self.app.add_url_rule('/api/get_available_moves', 'get_available_moves', self.get_available_moves, methods=['GET'])
+        self.app.add_url_rule('/api/get_available_moves', 'get_available_moves', self.get_available_moves, methods=['POST'])
         self.app.add_url_rule('/api/get_ascii_board', 'get_ascii_board', self.get_ascii_board, methods=['GET'])
         self.app.add_url_rule('/api/make_suggestion', 'make_suggestion', self.make_suggestion, methods=['POST'])
         self.app.add_url_rule('/api/make_accusation', 'make_accusation', self.make_accusation, methods=['POST'])
@@ -85,7 +85,6 @@ class Server:
         return jsonify({'status': 'Failed, player not moved'})
         
     def get_game_state(self):
-        print("hit")
         data = request.get_json()
         player_id = data["session_id"]
         if True:#self.game.get_player(player_id):

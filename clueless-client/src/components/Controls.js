@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Card from 'react-bootstrap/Card';
 import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import axios from 'axios';
 import Spinner from 'react-bootstrap/esm/Spinner';
 import EndTurnButton from './EndTurnButton';
+import Move from './Move';
 
 // this component will determine whether it is the viewing player's turn or not and display subcomponents accordingly
 function Controls({ sessionId }) {
@@ -34,7 +36,6 @@ function Controls({ sessionId }) {
                     })
                     .catch(error => {
                         console.error('Error creating post:', error);
-
                     });
             }
 
@@ -54,7 +55,9 @@ function Controls({ sessionId }) {
         <Card>
             <Card.Body>
                 <Row>
-
+                <Col><Move sessionId={sessionId}/></Col>
+                <Col>Suggest</Col>
+                <Col>Accuse</Col>
                 </Row>
                 <Row>
                     <EndTurnButton sessionId={sessionId} setCheckTurn={()=>{setCheckTurn(true)}} setIsTurn={()=>{setIsTurn(false)}} setLoading={()=>{setLoading(true)}} setGameState={(t)=>{setGameState({})}}/>
