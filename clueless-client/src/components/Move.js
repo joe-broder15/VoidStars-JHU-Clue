@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Card from 'react-bootstrap/Card';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import axios from 'axios';
-import Spinner from 'react-bootstrap/esm/Spinner';
-import EndTurnButton from './EndTurnButton';
 import Button from 'react-bootstrap/esm/Button';
 import ButtonGroup from 'react-bootstrap/esm/ButtonGroup';
 
 // this component will determine whether it is the viewing player's turn or not and display subcomponents accordingly
-function Move({ sessionId }) {
+function Move({ sessionId, moveDisabled }) {
     const [hasMoved, setHasMoved] = useState(false);
     const [moves, setMoves] = useState([]);
     // set an interval to get the state every second
@@ -42,7 +38,7 @@ function Move({ sessionId }) {
             });
     }
 
-    if (hasMoved) {
+    if (hasMoved || moveDisabled) {
         return (<h2>already moved</h2>);
     }
     return (

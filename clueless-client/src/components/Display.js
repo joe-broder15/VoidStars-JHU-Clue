@@ -7,7 +7,7 @@ import EventLog from './EventLog';
 import Cards from './Cards';
 import Spinner from 'react-bootstrap/esm/Spinner';
 
-// component exists to hold control and display subcomponents
+// component exists to hold display subcomponents
 function Display({ sessionId }) {
     const [gameState, setGameState] = useState({});
     const [loading, setLoading] = useState(true);
@@ -20,7 +20,6 @@ function Display({ sessionId }) {
                     "session_id": sessionId
                 })
                 .then(response => {
-                    // console.log(response.data.state);
                     setGameState(response.data.state);
                     setLoading(false);
                 })
@@ -30,12 +29,14 @@ function Display({ sessionId }) {
                 });
         }, 1000);
     });
+
+    // render based on state
     if (loading) {
         return(
             <Spinner/>
         );
     }
-
+    
     return (
         <Card>
             <Card.Body>
