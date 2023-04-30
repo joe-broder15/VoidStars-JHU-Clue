@@ -6,7 +6,7 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Dropdown from "react-bootstrap/Dropdown";
 
 // this component will determine whether it is the viewing player's turn or not and display subcomponents accordingly
-function Suggest({ sessionId }) {
+function Accuse({ sessionId }) {
   const characters = [
     "Mrs. White",
     "Miss Scarlet",
@@ -25,73 +25,47 @@ function Suggest({ sessionId }) {
     "Wrench",
   ];
   const [weapon, setWeapon] = useState("select a weapon");
-  const [canSuggest, setCanSuggest] = useState(false);
-  const [location, setLocation] = useState("");
+  const locations = [
+    "Study",
+    "Hall",
+    "Lounge",
+    "Library",
+    "Billiard Room",
+    "Dining Room",
+    "Conservatory",
+    "Ballroom",
+    "Kitchen",
+  ];
+  const [location, setLocation] = useState("select a location");
 
-  // set an interval to get the state every second
-  useEffect(() => {
-    axios
-      .post("http://127.0.0.1:5742/api/get_game_state", {
-        session_id: sessionId,
-      })
-      .then((response) => {
-        // check if it is currently our turn
-        var playerCharacter = "";
-        var gameState = response.data.state;
-        for (var i = 0; i < gameState.players.length; i++) {
-          // check if we can suggest
-          if (
-            gameState.players[i].session_id == sessionId &&
-            gameState.players[i].character == gameState.turn_character
-          ) {
-            // if so, stop checking for state and toggle that it is our turn
-            setCanSuggest(gameState.players[i].can_suggest);
-            playerCharacter = gameState.players[i].character;
-          }
-        }
-
-        // get the room containing our character
-        for (var i = 0; i < gameState.board.length; i++) {
-          // search through the room
-          for (var j = 0; j < gameState.board[i].characters.length; j++) {
-            if (gameState.board[i].characters[j] == playerCharacter) {
-              setLocation(gameState.board[i].name);
-            }
-          }
-        }
-      })
-      .catch((error) => {
-        console.error("Error creating post:", error);
-      });
-  }, []);
-
-  function makeSuggestion() {
-    if (character == "select a character" || weapon == "select a weapon") {
+  function makeAccusation() {
+    if (
+      character == "select a character" ||
+      weapon == "select a weapon" ||
+      location == "select a location"
+    ) {
       return;
     }
 
     axios
-      .post("http://127.0.0.1:5742/api/make_suggestion", {
+      .post("http://127.0.0.1:5742/api/make_accusation", {
         session_id: sessionId,
         character: character,
         weapon: weapon,
-        location: location,
+        room: location,
       })
       .then((response) => {
         console.log(response.data);
-        setCanSuggest(false);
       })
       .catch((error) => {
         console.error("Error creating post:", error);
       });
   }
 
-  if (!canSuggest) {
-    return <h2>can't suggest</h2>;
-  }
   return (
     <Card>
       <Card.Body>
+        {/* select a character */}
         <Dropdown as={ButtonGroup}>
           <Button variant="success">{character}</Button>
 
@@ -105,6 +79,7 @@ function Suggest({ sessionId }) {
             ))}
           </Dropdown.Menu>
         </Dropdown>
+        {/* select a weapon */}
         <Dropdown as={ButtonGroup}>
           <Button variant="success">{weapon}</Button>
 
@@ -118,10 +93,24 @@ function Suggest({ sessionId }) {
             ))}
           </Dropdown.Menu>
         </Dropdown>
-        <Button onClick={makeSuggestion}>Suggest</Button>
+        {/* select a location */}
+        <Dropdown as={ButtonGroup}>
+          <Button variant="success">{location}</Button>
+
+          <Dropdown.Toggle split variant="success" id="dropdown-split-basic" />
+
+          <Dropdown.Menu>
+            {locations.map((l) => (
+              <Dropdown.Item value={l} onClick={(e) => setLocation(l)}>
+                {l}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+        <Button onClick={makeAccusation}>Accuse</Button>
       </Card.Body>
     </Card>
   );
 }
 
-export default Suggest;
+export default Accuse;
