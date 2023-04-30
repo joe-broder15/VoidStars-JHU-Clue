@@ -7,6 +7,7 @@ import EventLog from "./EventLog";
 import Cards from "./Cards";
 import Spinner from "react-bootstrap/esm/Spinner";
 import Board from "./Board";
+import Container from "react-bootstrap/esm/Container";
 
 // component exists to hold display subcomponents
 function Display({ sessionId }) {
@@ -36,25 +37,22 @@ function Display({ sessionId }) {
   }
 
   return (
-    <Card>
-      <Card.Body>
-        <Row>
-          <Col>
-            <Board board={gameState.board} />
-          </Col>
-        </Row>
-        <Row>
-          
-        </Row>
-        <Row><Col>
-            <EventLog events={gameState.events} />
-          </Col>
-          <Col>
-            <Cards sessionId={sessionId} players={gameState.players} />
-          </Col>
-        </Row>
-      </Card.Body>
-    </Card>
+    <Container>
+      <Row>
+        <Col>
+          <Board board={gameState.board} />
+        </Col>
+      </Row>
+      <br/>
+      <Row>
+        <Col>
+          <EventLog events={gameState.events} />
+        </Col>
+        <Col>
+          <Cards sessionId={sessionId} players={gameState.players} />
+        </Col>
+      </Row>
+    </Container>
   );
 }
 

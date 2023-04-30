@@ -44,8 +44,9 @@ function Move({ sessionId, setSuggestEnable }) {
   }
   return (
     <Card>
+      <Card.Header>Move</Card.Header>
       <Card.Body>
-        <ButtonGroup vertical>
+        <ButtonGroup>
           {moves.map((move) => (
             <Button value={move} onClick={(e) => makeMove(e)}>
               {move}

@@ -63,8 +63,9 @@ function Accuse({ sessionId }) {
   }
 
   return (
-    <Card>
+    <Card><Card.Header>Accuse</Card.Header>
       <Card.Body>
+        
         {/* select a character */}
         <Dropdown as={ButtonGroup}>
           <Button variant="success">{character}</Button>

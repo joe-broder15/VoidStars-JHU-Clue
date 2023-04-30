@@ -11,7 +11,7 @@ function Room({ room }) {
 
   return (
     <td className="room" sm={2}>
-      <h6>{room.name}</h6>
+      <b>{room.name}</b>
       <ul>
         {room.characters.map((c) => (
           <li>{c}</li>

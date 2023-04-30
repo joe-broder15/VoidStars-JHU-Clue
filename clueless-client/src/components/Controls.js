@@ -8,6 +8,7 @@ import EndTurnButton from "./EndTurnButton";
 import Move from "./Move";
 import Suggest from "./Suggest";
 import Accuse from "./Accuse";
+import Container from "react-bootstrap/esm/Container";
 
 // this component will hold all of the controls and manage turns
 function Controls({ sessionId }) {
@@ -64,52 +65,50 @@ function Controls({ sessionId }) {
     return <h2>it is not your turn yet</h2>;
   }
   return (
-    <Card>
-      <Card.Body>
-        <Row>
-          {/* toggles between movement and suggestion */}
-          {suggestEnable == true ? (
-            <Col>
-              <Suggest sessionId={sessionId} suggestEnable={suggestEnable} />
-            </Col>
-          ) : (
-            <Col>
-              <Move
-                sessionId={sessionId}
-                setSuggestEnable={() => {
-                  setSuggestEnable(true);
-                }}
-              />
-            </Col>
-          )}
-          {/* accusation component */}
+    <Container>
+      <Row>
+        {/* toggles between movement and suggestion */}
+        {suggestEnable == true ? (
           <Col>
-            <Accuse sessionId={sessionId} />
+            <Suggest sessionId={sessionId} suggestEnable={suggestEnable} />
           </Col>
-        </Row>
-        <Row>
-          {/* end turn button */}
-          <EndTurnButton
-            sessionId={sessionId}
-            setCheckTurn={() => {
-              setCheckTurn(true);
-            }}
-            setIsTurn={() => {
-              setIsTurn(false);
-            }}
-            setLoading={() => {
-              setLoading(true);
-            }}
-            setGameState={() => {
-              setGameState({});
-            }}
-            setSuggestEnable={() => {
-              setSuggestEnable(false);
-            }}
-          />
-        </Row>
-      </Card.Body>
-    </Card>
+        ) : (
+          <Col>
+            <Move
+              sessionId={sessionId}
+              setSuggestEnable={() => {
+                setSuggestEnable(true);
+              }}
+            />
+          </Col>
+        )}
+        {/* accusation component */}
+        <Col>
+          <Accuse sessionId={sessionId} />
+        </Col>
+      </Row>
+      <Row>
+        {/* end turn button */}
+        <EndTurnButton
+          sessionId={sessionId}
+          setCheckTurn={() => {
+            setCheckTurn(true);
+          }}
+          setIsTurn={() => {
+            setIsTurn(false);
+          }}
+          setLoading={() => {
+            setLoading(true);
+          }}
+          setGameState={() => {
+            setGameState({});
+          }}
+          setSuggestEnable={() => {
+            setSuggestEnable(false);
+          }}
+        />
+      </Row>
+    </Container>
   );
 }
 

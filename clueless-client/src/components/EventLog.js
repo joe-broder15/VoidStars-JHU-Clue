@@ -9,22 +9,23 @@ import Container from "react-bootstrap/esm/Container";
 function EventLog({ events }) {
   // console.log(events[0]);
   return (
-    <Container className="eventLogCard">
-      {/* <Card > */}
-      {events
-        .slice(0)
-        .reverse()
-        .map((e) => (
-          <Row>
-            <Card>
-              <Card.Body>
-                {e.response}
-              </Card.Body>
-            </Card>
-          </Row>
-        ))}
-      {/* </Card> */}
-    </Container>
+    <Card>
+      <Card.Header>Events</Card.Header>
+      <Card.Body>
+        <Container className="eventLogCard">
+          {events
+            .slice(0)
+            .reverse()
+            .map((e) => (
+              <Row>
+                <Card>
+                  <Card.Body>{e.response}</Card.Body>
+                </Card>
+              </Row>
+            ))}
+        </Container>
+      </Card.Body>
+    </Card>
   );
 }
 

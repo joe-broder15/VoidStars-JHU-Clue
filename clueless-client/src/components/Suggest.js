@@ -95,6 +95,7 @@ function Suggest({ sessionId }) {
   }
   return (
     <Card>
+      <Card.Header>Suggest</Card.Header>
       <Card.Body>
         <Dropdown as={ButtonGroup}>
           <Button variant="success">{character}</Button>
