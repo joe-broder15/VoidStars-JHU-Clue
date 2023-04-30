@@ -6,6 +6,7 @@ import axios from "axios";
 import EventLog from "./EventLog";
 import Cards from "./Cards";
 import Spinner from "react-bootstrap/esm/Spinner";
+import Board from "./Board";
 
 // component exists to hold display subcomponents
 function Display({ sessionId }) {
@@ -38,12 +39,16 @@ function Display({ sessionId }) {
     <Card>
       <Card.Body>
         <Row>
-          <Col>board</Col>
           <Col>
-            <EventLog events={gameState.events} />
+            <Board board={gameState.board} />
           </Col>
         </Row>
         <Row>
+          
+        </Row>
+        <Row><Col>
+            <EventLog events={gameState.events} />
+          </Col>
           <Col>
             <Cards sessionId={sessionId} players={gameState.players} />
           </Col>

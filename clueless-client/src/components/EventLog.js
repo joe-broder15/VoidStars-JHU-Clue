@@ -11,9 +11,18 @@ function EventLog({ events }) {
   return (
     <Container className="eventLogCard">
       {/* <Card > */}
-      {events.map((e) => (
-        <p>{e.response}</p>
-      ))}
+      {events
+        .slice(0)
+        .reverse()
+        .map((e) => (
+          <Row>
+            <Card>
+              <Card.Body>
+                {e.response}
+              </Card.Body>
+            </Card>
+          </Row>
+        ))}
       {/* </Card> */}
     </Container>
   );
