@@ -35,6 +35,15 @@ class RoomEnum(Enum):
     HALLWAY_BALLROOM_KITCHEN = (22, "Hallway Ballroom Kitchen", RoomType.HALLWAY, [])
 
 class Board:
+    ORIGINAL_CHARACTERS_STARTING_TILES = {
+        "Miss Scarlet": RoomEnum.HALLWAY_HALL_LOUNGE,
+        "Colonel Mustard": RoomEnum.HALLWAY_LOUNGE_DINING_ROOM,
+        "Mrs. White": RoomEnum.HALLWAY_BALLROOM_KITCHEN,
+        "Mr. Green": RoomEnum.HALLWAY_CONSERVATORY_BALLROOM,
+        "Mrs. Peacock": RoomEnum.HALLWAY_LIBRARY_CONSERVATORY,
+        "Professor Plum": RoomEnum.HALLWAY_STUDY_LIBRARY,
+    }
+
     STARTING_LOCATIONS = [
         (1, 0),
         (3, 4),
@@ -80,8 +89,14 @@ class Board:
                     self.grid[x][y].travel_options.add(room)
 
         if character_names:
-            for idx, character_name in enumerate(character_names):
-                row, col = self.STARTING_LOCATIONS[idx % len(self.STARTING_LOCATIONS)]
+            for character_name in character_names:
+                if character_name in self.ORIGINAL_CHARACTERS_STARTING_TILES:
+                    starting_tile = self.ORIGINAL_CHARACTERS_STARTING_TILES[character_name]
+                    row, col = self.get_room_position(starting_tile)
+                else:
+                    print("Initializing board with unknown character!")
+                    row, col = self.STARTING_LOCATIONS[len(self.characters) % len(self.STARTING_LOCATIONS)]
+
                 room = self.grid[row][col]
                 room.add_character(character_name)
                 self.characters.append(character_name)

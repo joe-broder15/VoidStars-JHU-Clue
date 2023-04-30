@@ -31,7 +31,7 @@ class Server:
         player_id = data["session_id"]
         if self.game.get_player(player_id):
             print("Server got accusation: " + str(request.json))
-            # try to accuse a player and return a cooresponding stratus
+            # try to accuse a player and return a corresponding stratus
             if self.game.accuse(player_id, data["character"], data["weapon"], data["room"]):
                 return jsonify({'status': 'Success, you won the game'})
             else:
