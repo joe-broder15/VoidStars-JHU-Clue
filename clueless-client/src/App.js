@@ -15,6 +15,7 @@ function App() {
 
   // resolve the state of the game
   var content;
+  // load the component for joining  a game if there is no session id
   if (sessionId == "") {
     content = (
       <JoinGame
@@ -24,6 +25,7 @@ function App() {
       />
     );
   } else if (!gameStarted) {
+    // load the component for getting a character if there is a session id
     content = (
       <StartGame
         sessionId={sessionId}
@@ -33,6 +35,7 @@ function App() {
       />
     );
   } else {
+    // load the game view if we are done logging in
     content = <GameView sessionId={sessionId} />;
   }
 

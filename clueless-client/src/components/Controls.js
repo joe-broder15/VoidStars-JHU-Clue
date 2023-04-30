@@ -83,7 +83,9 @@ function Controls({ sessionId }) {
             </Col>
           )}
           {/* accusation component */}
-          <Col><Accuse sessionId={sessionId}/></Col>
+          <Col>
+            <Accuse sessionId={sessionId} />
+          </Col>
         </Row>
         <Row>
           {/* end turn button */}

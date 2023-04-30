@@ -7,6 +7,7 @@ import Dropdown from "react-bootstrap/Dropdown";
 
 // this component will determine whether it is the viewing player's turn or not and display subcomponents accordingly
 function Suggest({ sessionId }) {
+  // constant list of characters
   const characters = [
     "Mrs. White",
     "Miss Scarlet",
@@ -15,7 +16,8 @@ function Suggest({ sessionId }) {
     "Colonel Mustard",
     "Mrs. Peacock",
   ];
-  const [character, setCharacter] = useState("select a character");
+
+  // constant list of weapons
   const weapons = [
     "Revolver",
     "Knife",
@@ -24,11 +26,14 @@ function Suggest({ sessionId }) {
     "Candlestick",
     "Wrench",
   ];
+
+  // state
+  const [character, setCharacter] = useState("select a character");
   const [weapon, setWeapon] = useState("select a weapon");
   const [canSuggest, setCanSuggest] = useState(false);
   const [location, setLocation] = useState("");
 
-  // set an interval to get the state every second
+  // get game state on load
   useEffect(() => {
     axios
       .post("http://127.0.0.1:5742/api/get_game_state", {
@@ -39,7 +44,6 @@ function Suggest({ sessionId }) {
         var playerCharacter = "";
         var gameState = response.data.state;
         for (var i = 0; i < gameState.players.length; i++) {
-          // check if we can suggest
           if (
             gameState.players[i].session_id == sessionId &&
             gameState.players[i].character == gameState.turn_character
@@ -52,7 +56,6 @@ function Suggest({ sessionId }) {
 
         // get the room containing our character
         for (var i = 0; i < gameState.board.length; i++) {
-          // search through the room
           for (var j = 0; j < gameState.board[i].characters.length; j++) {
             if (gameState.board[i].characters[j] == playerCharacter) {
               setLocation(gameState.board[i].name);
@@ -65,6 +68,7 @@ function Suggest({ sessionId }) {
       });
   }, []);
 
+  // function for making suggestion
   function makeSuggestion() {
     if (character == "select a character" || weapon == "select a weapon") {
       return;
