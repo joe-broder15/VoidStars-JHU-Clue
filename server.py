@@ -4,14 +4,15 @@ import uuid
 from threading import Thread
 import random
 import time
+from flask_cors import CORS
 
 class Server:
     def __init__(self):
         self.app = Flask(__name__)
-
+        CORS(self.app)
         self.app.add_url_rule('/api/join_game', 'join_game', self.join_game, methods=['POST'])
-        self.app.add_url_rule('/api/get_game_state', 'get_game_state', self.get_game_state, methods=['GET'])
-        self.app.add_url_rule('/api/get_available_moves', 'get_available_moves', self.get_available_moves, methods=['GET'])
+        self.app.add_url_rule('/api/get_game_state', 'get_game_state', self.get_game_state, methods=['POST'])
+        self.app.add_url_rule('/api/get_available_moves', 'get_available_moves', self.get_available_moves, methods=['POST'])
         self.app.add_url_rule('/api/get_ascii_board', 'get_ascii_board', self.get_ascii_board, methods=['GET'])
         self.app.add_url_rule('/api/make_suggestion', 'make_suggestion', self.make_suggestion, methods=['POST'])
         self.app.add_url_rule('/api/make_accusation', 'make_accusation', self.make_accusation, methods=['POST'])
@@ -44,7 +45,7 @@ class Server:
         # get data and add a player
         data = request.get_json()
         session_id = self.game.add_player(data["username"])
-        return jsonify({'session_id': session_id})
+        return jsonify(session_id)
     
     # set a character
     def set_character(self):
@@ -86,7 +87,7 @@ class Server:
     def get_game_state(self):
         data = request.get_json()
         player_id = data["session_id"]
-        if self.game.get_player(player_id):
+        if True:#self.game.get_player(player_id):
             return jsonify({"status": "success", "state":self.game.get_state(player_id)})
         else:
             return jsonify({'status': 'Failed, bad session id'})

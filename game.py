@@ -313,7 +313,8 @@ class Game:
         player = self.get_player(session_id)
         if player:
             if location == "STAY":
-                self.create_event(EventType.STAY, character=player.character, location=location)
+                loc2 = self.game_board.get_player_room(player.character)
+                self.create_event(EventType.STAY, character=player.character, location=loc2)
                 return True
             if " " in location:
                 location = location.replace(" ", "_")
