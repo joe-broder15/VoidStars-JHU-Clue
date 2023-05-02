@@ -43,7 +43,7 @@ function Display({ sessionId }) {
           <Board board={gameState.board} />
         </Col>
       </Row>
-      <br/>
+      <br />
       <Row>
         <Col>
           <EventLog events={gameState.events} />

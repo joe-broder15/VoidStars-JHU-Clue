@@ -38,6 +38,8 @@ function Accuse({ sessionId }) {
   ];
   const [location, setLocation] = useState("select a location");
 
+  const [hasAccused, setHasAccused] = useState(false);
+
   function makeAccusation() {
     if (
       character == "select a character" ||
@@ -55,17 +57,21 @@ function Accuse({ sessionId }) {
         room: location,
       })
       .then((response) => {
-        console.log(response.data);
+        setHasAccused(true);
       })
       .catch((error) => {
         console.error("Error creating post:", error);
       });
   }
 
+  if (hasAccused) {
+    return <h2>Already Accused</h2>;
+  }
+
   return (
-    <Card><Card.Header>Accuse</Card.Header>
+    <Card>
+      <Card.Header>Accuse</Card.Header>
       <Card.Body>
-        
         {/* select a character */}
         <Dropdown as={ButtonGroup}>
           <Button variant="success">{character}</Button>

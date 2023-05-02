@@ -23,6 +23,8 @@ function Controls({ sessionId }) {
 
   const [suggestEnable, setSuggestEnable] = useState(false);
 
+  const [winner, setWinner] = useState(null);
+
   // set an interval to get the state every second
   useEffect(() => {
     setTimeout(function () {
@@ -36,6 +38,7 @@ function Controls({ sessionId }) {
           .then((response) => {
             setGameState(response.data.state);
             setLoading(false);
+            setWinner(gameState.winner);
             // check if it is currently our turn
             for (var i = 0; i < gameState.players.length; i++) {
               if (
@@ -60,6 +63,9 @@ function Controls({ sessionId }) {
   // render based on state of the turn/game
   if (loading) {
     return <Spinner />;
+  }
+  if (winner != null) {
+    return <h2>{winner} has won the game!</h2>;
   }
   if (!isTurn) {
     return <h2>it is not your turn yet</h2>;

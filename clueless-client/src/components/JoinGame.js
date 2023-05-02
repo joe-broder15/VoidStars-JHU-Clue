@@ -37,7 +37,6 @@ function JoinGame({ setGlobalId }) {
         session_id: sessionId,
       })
       .then((response) => {
-        console.log(response.data);
         setGlobalId(sessionId);
       })
       .catch((error) => {

@@ -7,7 +7,6 @@ import Container from "react-bootstrap/esm/Container";
 
 // component exists to hold control and display subcomponents
 function EventLog({ events }) {
-  // console.log(events[0]);
   return (
     <Card>
       <Card.Header>Events</Card.Header>
