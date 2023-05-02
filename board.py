@@ -33,25 +33,25 @@ class RoomEnum(Enum):
     HALLWAY_DINING_ROOM_KITCHEN = (20, "Hallway Dining Room Kitchen", RoomType.HALLWAY, [])
     HALLWAY_CONSERVATORY_BALLROOM = (21, "Hallway Conservatory Ballroom", RoomType.HALLWAY, [])
     HALLWAY_BALLROOM_KITCHEN = (22, "Hallway Ballroom Kitchen", RoomType.HALLWAY, [])
+    STARTING_TILE = (23, "Starting Tile", RoomType.WALL, [])
 
 class Board:
+    # ORIGINAL_CHARACTERS_STARTING_TILES = {
+    #     "Miss Scarlet": RoomEnum.HALLWAY_HALL_LOUNGE,
+    #     "Colonel Mustard": RoomEnum.HALLWAY_LOUNGE_DINING_ROOM,
+    #     "Mrs. White": RoomEnum.HALLWAY_BALLROOM_KITCHEN,
+    #     "Mr. Green": RoomEnum.HALLWAY_CONSERVATORY_BALLROOM,
+    #     "Mrs. Peacock": RoomEnum.HALLWAY_LIBRARY_CONSERVATORY,
+    #     "Professor Plum": RoomEnum.HALLWAY_STUDY_LIBRARY,
+    # }
     ORIGINAL_CHARACTERS_STARTING_TILES = {
-        "Miss Scarlet": RoomEnum.HALLWAY_HALL_LOUNGE,
-        "Colonel Mustard": RoomEnum.HALLWAY_LOUNGE_DINING_ROOM,
-        "Mrs. White": RoomEnum.HALLWAY_BALLROOM_KITCHEN,
-        "Mr. Green": RoomEnum.HALLWAY_CONSERVATORY_BALLROOM,
-        "Mrs. Peacock": RoomEnum.HALLWAY_LIBRARY_CONSERVATORY,
-        "Professor Plum": RoomEnum.HALLWAY_STUDY_LIBRARY,
+        "Miss Scarlet": (0, 4),
+        "Colonel Mustard": (2, 6),
+        "Mrs. White": (6, 4),
+        "Mr. Green": (6, 2),
+        "Mrs. Peacock": (4, 0),
+        "Professor Plum": (2, 0),
     }
-
-    STARTING_LOCATIONS = [
-        (1, 0),
-        (3, 4),
-        (1, 4),
-        (4, 1),
-        (0, 3),
-        (1, 4)
-    ]
 
     def __init__(self):
         self.grid_default = None
@@ -68,11 +68,13 @@ class Board:
 
     def start_board(self, character_names=None):
         self.grid_default = [
-            [RoomEnum.STUDY, RoomEnum.HALLWAY_STUDY_HALL, RoomEnum.HALL, RoomEnum.HALLWAY_HALL_LOUNGE, RoomEnum.LOUNGE],
-            [RoomEnum.HALLWAY_STUDY_LIBRARY, RoomEnum.WALL, RoomEnum.HALLWAY_HALL_BILLIARD_ROOM, RoomEnum.WALL, RoomEnum.HALLWAY_LOUNGE_DINING_ROOM],
-            [RoomEnum.LIBRARY, RoomEnum.HALLWAY_LIBRARY_BILLIARD_ROOM, RoomEnum.BILLIARD_ROOM, RoomEnum.HALLWAY_BILLIARD_ROOM_DINING_ROOM, RoomEnum.DINING_ROOM],
-            [RoomEnum.HALLWAY_LIBRARY_CONSERVATORY, RoomEnum.WALL, RoomEnum.HALLWAY_BILLIARD_ROOM_BALLROOM, RoomEnum.WALL, RoomEnum.HALLWAY_DINING_ROOM_KITCHEN],
-            [RoomEnum.CONSERVATORY, RoomEnum.HALLWAY_CONSERVATORY_BALLROOM, RoomEnum.BALLROOM, RoomEnum.HALLWAY_BALLROOM_KITCHEN, RoomEnum.KITCHEN],
+            [RoomEnum.WALL, RoomEnum.WALL, RoomEnum.WALL, RoomEnum.WALL, RoomEnum.STARTING_TILE, RoomEnum.WALL, RoomEnum.WALL],
+            [RoomEnum.WALL, RoomEnum.STUDY, RoomEnum.HALLWAY_STUDY_HALL, RoomEnum.HALL, RoomEnum.HALLWAY_HALL_LOUNGE, RoomEnum.LOUNGE, RoomEnum.WALL],
+            [RoomEnum.STARTING_TILE, RoomEnum.HALLWAY_STUDY_LIBRARY, RoomEnum.WALL, RoomEnum.HALLWAY_HALL_BILLIARD_ROOM, RoomEnum.WALL, RoomEnum.HALLWAY_LOUNGE_DINING_ROOM, RoomEnum.STARTING_TILE],
+            [RoomEnum.WALL, RoomEnum.LIBRARY, RoomEnum.HALLWAY_LIBRARY_BILLIARD_ROOM, RoomEnum.BILLIARD_ROOM, RoomEnum.HALLWAY_BILLIARD_ROOM_DINING_ROOM, RoomEnum.DINING_ROOM, RoomEnum.WALL],
+            [RoomEnum.STARTING_TILE, RoomEnum.HALLWAY_LIBRARY_CONSERVATORY, RoomEnum.WALL, RoomEnum.HALLWAY_BILLIARD_ROOM_BALLROOM, RoomEnum.WALL, RoomEnum.HALLWAY_DINING_ROOM_KITCHEN, RoomEnum.WALL],
+            [RoomEnum.WALL, RoomEnum.CONSERVATORY, RoomEnum.HALLWAY_CONSERVATORY_BALLROOM, RoomEnum.BALLROOM, RoomEnum.HALLWAY_BALLROOM_KITCHEN, RoomEnum.KITCHEN, RoomEnum.WALL],
+            [RoomEnum.WALL, RoomEnum.WALL, RoomEnum.STARTING_TILE, RoomEnum.WALL, RoomEnum.STARTING_TILE, RoomEnum.WALL, RoomEnum.WALL],
         ]
 
         # Populate grid
@@ -91,8 +93,7 @@ class Board:
         if character_names:
             for character_name in character_names:
                 if character_name in self.ORIGINAL_CHARACTERS_STARTING_TILES:
-                    starting_tile = self.ORIGINAL_CHARACTERS_STARTING_TILES[character_name]
-                    row, col = self.get_room_position(starting_tile)
+                    row, col = self.ORIGINAL_CHARACTERS_STARTING_TILES[character_name]
                 else:
                     print("Initializing board with unknown character!")
                     row, col = self.STARTING_LOCATIONS[len(self.characters) % len(self.STARTING_LOCATIONS)]
@@ -156,7 +157,9 @@ class Board:
             print(f"Invalid move for {character}: room is out of bounds.")
             return False
 
-        new_room_type = self.get_room_type(new_row, new_col)
+        # new_room_type = self.get_room_type(new_row, new_col)
+        new_room = self.grid[new_row][new_col]
+        new_room_type = new_room.type
 
         # Check if the target position is a wall
         if new_room_type == RoomType.WALL:
@@ -169,6 +172,11 @@ class Board:
             if ([new_row], [new_col]) in self.character_positions.values():
                 print(f"Invalid move for {character}: tile is occupied")
                 return False
+
+        # Check if the target position is a hallway and if it's occupied by another player
+        if new_room_type == RoomType.HALLWAY and new_room.characters:
+            print(f"Invalid move for {character}: hallway is occupied")
+            return False
 
         # If none of the above conditions are met, return True
         return True

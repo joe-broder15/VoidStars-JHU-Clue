@@ -28,7 +28,6 @@ class Game:
         self.demo = 0  # state to be set by a user during the demo
 
     # generates a random session id
-    #  TODO: CHECK FOR COLLISIONS
     def gen_session_id(self):
         letters = string.ascii_lowercase
         return "".join(random.choice(letters) for i in range(16))
